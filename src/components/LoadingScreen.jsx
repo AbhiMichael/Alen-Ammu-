@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { preloadAllImages, preloadLoadingScreenImage } from '../utils/preloadFrames';
+import React, { useState, useEffect, useRef } from 'react';
+import { preloadAllImages, preloadLoadingScreenImage, removeProgressListener } from '../utils/preloadFrames';
 
 export default function LoadingScreen({
   onStartExperience,
@@ -13,40 +13,44 @@ export default function LoadingScreen({
   const [loadedBundle, setLoadedBundle] = useState(null);
   const [imgLoaded, setImgLoaded] = useState(false);
 
+  const onLoadingImageReadyRef = useRef(onLoadingImageReady);
+  useEffect(() => {
+    onLoadingImageReadyRef.current = onLoadingImageReady;
+  }, [onLoadingImageReady]);
+
   useEffect(() => {
     let isCancelled = false;
 
-    // 1. Prioritize loading.webp first
+    // 1. Subscribe to frame preloader progress immediately so percentage updates in real-time
+    const handleProgress = (pct) => {
+      if (!isCancelled) {
+        setProgress(pct);
+      }
+    };
+
+    preloadAllImages(handleProgress).then((bundle) => {
+      if (!isCancelled) {
+        setProgress(100);
+        setLoadedBundle(bundle);
+        setIsComplete(true);
+      }
+    });
+
+    // 2. High priority dedicated loader for loading.webp background & audio trigger
     preloadLoadingScreenImage().then((img) => {
       if (!isCancelled && img) {
         setImgLoaded(true);
       }
-      // Immediately notify parent to start loading music right after loading.webp
-      if (onLoadingImageReady) {
-        onLoadingImageReady();
+      if (onLoadingImageReadyRef.current) {
+        onLoadingImageReadyRef.current();
       }
-
-      // 2. Once loading screen image is ready, begin frame stream
-      preloadAllImages((pct) => {
-        if (!isCancelled) {
-          setProgress(pct);
-          if (pct >= 100) {
-            setIsComplete(true);
-          }
-        }
-      }).then((bundle) => {
-        if (!isCancelled) {
-          setProgress(100);
-          setIsComplete(true);
-          setLoadedBundle(bundle);
-        }
-      });
     });
 
     return () => {
       isCancelled = true;
+      removeProgressListener(handleProgress);
     };
-  }, [onLoadingImageReady]);
+  }, []);
 
   return (
     <div className="relative w-full h-[100dvh] max-w-[480px] mx-auto overflow-hidden bg-gradient-to-b from-[#f9f7f2] via-[#f3ede2] to-[#e8e0d0] select-none">
@@ -58,7 +62,9 @@ export default function LoadingScreen({
         decoding="async"
         onLoad={() => {
           setImgLoaded(true);
-          if (onLoadingImageReady) onLoadingImageReady();
+          if (onLoadingImageReadyRef.current) {
+            onLoadingImageReadyRef.current();
+          }
         }}
         className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-300 ${
           imgLoaded ? 'opacity-100' : 'opacity-0'
