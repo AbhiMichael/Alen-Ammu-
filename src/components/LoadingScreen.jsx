@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { preloadAllImages, preloadLoadingScreenImage } from '../utils/preloadFrames';
 
-export default function LoadingScreen({ onStartExperience, isMuted, onToggleMusic }) {
+export default function LoadingScreen({
+  onStartExperience,
+  isMuted,
+  onToggleMusic,
+  isMusicLoaded,
+  onLoadingImageReady
+}) {
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [loadedBundle, setLoadedBundle] = useState(null);
@@ -15,6 +21,11 @@ export default function LoadingScreen({ onStartExperience, isMuted, onToggleMusi
       if (!isCancelled && img) {
         setImgLoaded(true);
       }
+      // Immediately notify parent to start loading music right after loading.webp
+      if (onLoadingImageReady) {
+        onLoadingImageReady();
+      }
+
       // 2. Once loading screen image is ready, begin frame stream
       preloadAllImages((pct) => {
         if (!isCancelled) {
@@ -35,7 +46,7 @@ export default function LoadingScreen({ onStartExperience, isMuted, onToggleMusi
     return () => {
       isCancelled = true;
     };
-  }, []);
+  }, [onLoadingImageReady]);
 
   return (
     <div className="relative w-full h-[100dvh] max-w-[480px] mx-auto overflow-hidden bg-gradient-to-b from-[#f9f7f2] via-[#f3ede2] to-[#e8e0d0] select-none">
@@ -45,7 +56,10 @@ export default function LoadingScreen({ onStartExperience, isMuted, onToggleMusi
         alt="Alen & Ammu Wedding"
         fetchpriority="high"
         decoding="async"
-        onLoad={() => setImgLoaded(true)}
+        onLoad={() => {
+          setImgLoaded(true);
+          if (onLoadingImageReady) onLoadingImageReady();
+        }}
         className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-300 ${
           imgLoaded ? 'opacity-100' : 'opacity-0'
         }`}
@@ -99,28 +113,31 @@ export default function LoadingScreen({ onStartExperience, isMuted, onToggleMusi
           )}
 
           {/* Speaker button: transparent button with black line drawing speaker, under Open Invitation */}
-          <button
-            onClick={onToggleMusic}
-            aria-label={isMuted ? 'Unmute background music' : 'Mute background music'}
-            className="mt-3 p-1.5 bg-transparent text-stone-900 hover:opacity-70 active:scale-90 transition-all cursor-pointer flex items-center justify-center"
-            title={isMuted ? 'Unmute' : 'Mute'}
-          >
-            {isMuted ? (
-              /* Muted speaker line drawing (with strike-through cross) */
-              <svg className="w-6 h-6 sm:w-7 sm:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M11 5L6 9H2v6h4l5 4V5z" />
-                <line x1="23" y1="9" x2="17" y2="15" />
-                <line x1="17" y1="9" x2="23" y2="15" />
-              </svg>
-            ) : (
-              /* Unmuted speaker line drawing with sound waves */
-              <svg className="w-6 h-6 sm:w-7 sm:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M11 5L6 9H2v6h4l5 4V5z" />
-                <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
-                <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
-              </svg>
-            )}
-          </button>
+          {/* Only appears once music has fully loaded */}
+          {isMusicLoaded && (
+            <button
+              onClick={onToggleMusic}
+              aria-label={isMuted ? 'Unmute background music' : 'Mute background music'}
+              className="mt-3 p-1.5 bg-transparent text-stone-900 hover:opacity-70 active:scale-90 transition-all duration-300 animate-fadeIn cursor-pointer flex items-center justify-center"
+              title={isMuted ? 'Unmute' : 'Mute'}
+            >
+              {isMuted ? (
+                /* Muted speaker line drawing (with strike-through cross) */
+                <svg className="w-6 h-6 sm:w-7 sm:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                  <line x1="23" y1="9" x2="17" y2="15" />
+                  <line x1="17" y1="9" x2="23" y2="15" />
+                </svg>
+              ) : (
+                /* Unmuted speaker line drawing with sound waves */
+                <svg className="w-6 h-6 sm:w-7 sm:h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M11 5L6 9H2v6h4l5 4V5z" />
+                  <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+                </svg>
+              )}
+            </button>
+          )}
         </div>
       </div>
     </div>
