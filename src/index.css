@@ -1,0 +1,135 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-serif: 'Cinzel', serif;
+    --font-script: 'Great Vibes', cursive;
+    --font-alex: 'Alex Brush', cursive;
+    --font-pinyon: 'Pinyon Script', cursive;
+    --font-cormorant: 'Cormorant Garamond', serif;
+    --font-sans: 'Montserrat', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #0d0f12;
+    color: #f3f4f6;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    touch-action: pan-y;
+  }
+}
+
+/* Custom Typography Helpers */
+.font-script {
+  font-family: 'Great Vibes', cursive;
+}
+
+.font-alex {
+  font-family: 'Alex Brush', cursive;
+}
+
+.font-pinyon {
+  font-family: 'Pinyon Script', cursive;
+}
+
+.font-cinzel {
+  font-family: 'Cinzel', serif;
+}
+
+.font-cormorant {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+.font-playfair {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-feature-settings: 'lnum' 1;
+  font-variant-numeric: lining-nums;
+}
+
+/* Hide scrollbars for clean mobile app feel */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Dreamy Sun Glare & Lens Flare Animations */
+@keyframes sunGlareBreathe {
+  0%, 100% {
+    transform: scale(1) translate(0, 0);
+    opacity: 0.88;
+    filter: brightness(1);
+  }
+  30% {
+    transform: scale(1.06) translate(-6px, 4px);
+    opacity: 1;
+    filter: brightness(1.15);
+  }
+  70% {
+    transform: scale(0.96) translate(5px, -3px);
+    opacity: 0.82;
+    filter: brightness(0.94);
+  }
+}
+
+@keyframes sunRayShimmer {
+  0%, 100% {
+    opacity: 0.75;
+    transform: rotate(0deg) scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: rotate(2.5deg) scale(1.08);
+  }
+}
+
+@keyframes flareOrbDrift {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0.65;
+  }
+  50% {
+    transform: translate(-12px, 10px) scale(1.18);
+    opacity: 0.95;
+  }
+}
+
+@keyframes flareSparkle {
+  0%, 100% {
+    opacity: 0.25;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.25);
+  }
+}
+
+.animate-glare-breathe {
+  animation: sunGlareBreathe 5.5s ease-in-out infinite;
+}
+
+.animate-ray-shimmer {
+  animation: sunRayShimmer 4.2s ease-in-out infinite;
+}
+
+.animate-flare-drift {
+  animation: flareOrbDrift 6s ease-in-out infinite;
+}
+
+.animate-sparkle-1 {
+  animation: flareSparkle 2.8s ease-in-out infinite;
+}
+
+.animate-sparkle-2 {
+  animation: flareSparkle 3.6s ease-in-out infinite 0.7s;
+}
+
+.animate-sparkle-3 {
+  animation: flareSparkle 4.2s ease-in-out infinite 1.4s;
+}
