@@ -1,27 +1,35 @@
 import React, { useState, useEffect } from 'react';
-import { preloadAllImages } from '../utils/preloadFrames';
+import { preloadAllImages, preloadLoadingScreenImage } from '../utils/preloadFrames';
 
 export default function LoadingScreen({ onStartExperience }) {
   const [progress, setProgress] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [loadedBundle, setLoadedBundle] = useState(null);
+  const [imgLoaded, setImgLoaded] = useState(false);
 
   useEffect(() => {
     let isCancelled = false;
 
-    preloadAllImages((pct) => {
-      if (!isCancelled) {
-        setProgress(pct);
-        if (pct >= 100) {
-          setIsComplete(true);
+    // 1. Prioritize loading.webp first
+    preloadLoadingScreenImage().then((img) => {
+      if (!isCancelled && img) {
+        setImgLoaded(true);
+      }
+      // 2. Once loading screen image is ready, begin frame stream
+      preloadAllImages((pct) => {
+        if (!isCancelled) {
+          setProgress(pct);
+          if (pct >= 100) {
+            setIsComplete(true);
+          }
         }
-      }
-    }).then((bundle) => {
-      if (!isCancelled) {
-        setProgress(100);
-        setIsComplete(true);
-        setLoadedBundle(bundle);
-      }
+      }).then((bundle) => {
+        if (!isCancelled) {
+          setProgress(100);
+          setIsComplete(true);
+          setLoadedBundle(bundle);
+        }
+      });
     });
 
     return () => {
@@ -30,12 +38,17 @@ export default function LoadingScreen({ onStartExperience }) {
   }, []);
 
   return (
-    <div className="relative w-full h-[100dvh] max-w-[480px] mx-auto overflow-hidden bg-black select-none">
-      {/* Background Image: loading.webp without overlay */}
+    <div className="relative w-full h-[100dvh] max-w-[480px] mx-auto overflow-hidden bg-gradient-to-b from-[#f9f7f2] via-[#f3ede2] to-[#e8e0d0] select-none">
+      {/* Background Image: loading.webp with high priority, instant load, and smooth fade-in */}
       <img
         src="/loading.webp"
         alt="Alen & Ammu Wedding"
-        className="absolute inset-0 w-full h-full object-cover object-center"
+        fetchpriority="high"
+        decoding="async"
+        onLoad={() => setImgLoaded(true)}
+        className={`absolute inset-0 w-full h-full object-cover object-center transition-opacity duration-300 ${
+          imgLoaded ? 'opacity-100' : 'opacity-0'
+        }`}
       />
 
       {/* Minimal 2D Text directly on the sky (approx. 14% to 35% from top) */}
