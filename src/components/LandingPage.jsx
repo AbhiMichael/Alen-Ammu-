@@ -10,10 +10,18 @@ import {
   preloadAllImages
 } from '../utils/preloadFrames';
 
+// Scroll frame 1 to 600: Landing (1-400) & Church Venue (401-600)
+// Scroll frame 601 to 720: Smooth sliding-up of the Reception page over the venue
+const TOTAL_SCROLL_FRAMES = 720;
+
 export default function LandingPage({ preloadedBundle }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
+  const receptionContainerRef = useRef(null);
+  const beigeBackdropRef = useRef(null);
+  const receptionDetailsRef = useRef(null);
   const [frameIndex, setFrameIndex] = useState(1);
+  const [isReceptionImgLoaded, setIsReceptionImgLoaded] = useState(false);
 
   const bundleRef = useRef(preloadedBundle || null);
   const targetFrameRef = useRef(1);
@@ -81,10 +89,62 @@ export default function LandingPage({ preloadedBundle }) {
 
       lastDrawn = -1;
       render(Math.round(currentFrameRef.current));
+      updateReceptionSlide(currentFrameRef.current);
+    };
+
+    const updateReceptionSlide = (curr) => {
+      const container = receptionContainerRef.current;
+      const backdrop = beigeBackdropRef.current;
+      const details = receptionDetailsRef.current;
+      if (!container) return;
+
+      if (curr <= 600) {
+        container.style.transform = 'translate3d(0, 100%, 0)';
+        container.style.visibility = 'hidden';
+        if (backdrop) backdrop.style.opacity = '0';
+        if (details) {
+          details.style.opacity = '0';
+          details.style.transform = 'translate3d(0, 10px, 0)';
+          details.style.pointerEvents = 'none';
+        }
+        return;
+      }
+
+      container.style.visibility = 'visible';
+      // Progress from 0 at frame 600 to 1 at frame 720
+      const progress = Math.max(0, Math.min(1, (curr - 600) / 120));
+      const translateY = (1 - progress) * 100;
+      container.style.transform = `translate3d(0, ${translateY.toFixed(2)}%, 0)`;
+
+      // When sliding pass half of the screen (progress > 0.5):
+      // background colour changes to beige
+      if (progress <= 0.5) {
+        if (backdrop) backdrop.style.opacity = '0';
+      } else {
+        // Smooth fade-in to warm wedding beige from 0.5 to 0.85
+        const beigeFactor = Math.min(1, (progress - 0.5) / 0.35);
+        if (backdrop) backdrop.style.opacity = beigeFactor.toFixed(3);
+      }
+
+      // Only show texts when the background is fully loaded (progress >= 0.95)
+      if (details) {
+        if (progress >= 0.95) {
+          details.style.opacity = '1';
+          details.style.transform = 'translate3d(0, 0, 0)';
+          details.style.pointerEvents = 'auto';
+        } else {
+          details.style.opacity = '0';
+          details.style.transform = 'translate3d(0, 10px, 0)';
+          details.style.pointerEvents = 'none';
+        }
+      }
     };
 
     const render = (globalNum) => {
       const clamped = Math.max(1, Math.min(TOTAL_FRAMES, globalNum));
+      if (clamped === lastDrawn && globalNum > TOTAL_FRAMES) {
+        return;
+      }
       const bundle = bundleRef.current;
 
       let img = null;
@@ -153,6 +213,7 @@ export default function LandingPage({ preloadedBundle }) {
         if (toDraw !== lastDrawn) {
           render(toDraw);
           setFrameIndex(toDraw);
+          lastDrawn = toDraw;
         }
       } else if (current !== target) {
         currentFrameRef.current = target;
@@ -160,8 +221,11 @@ export default function LandingPage({ preloadedBundle }) {
         if (toDraw !== lastDrawn) {
           render(toDraw);
           setFrameIndex(toDraw);
+          lastDrawn = toDraw;
         }
       }
+
+      updateReceptionSlide(currentFrameRef.current);
       animFrameId = requestAnimationFrame(loop);
     };
 
@@ -169,7 +233,7 @@ export default function LandingPage({ preloadedBundle }) {
     const handleWheel = (e) => {
       e.preventDefault();
       const delta = e.deltaY * 0.35;
-      targetFrameRef.current = Math.max(1, Math.min(TOTAL_FRAMES, targetFrameRef.current + delta));
+      targetFrameRef.current = Math.max(1, Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + delta));
     };
 
     // Mobile touch drag
@@ -183,14 +247,14 @@ export default function LandingPage({ preloadedBundle }) {
       const deltaY = (lastTouchY - currentY) * 0.45;
       lastTouchY = currentY;
 
-      targetFrameRef.current = Math.max(1, Math.min(TOTAL_FRAMES, targetFrameRef.current + deltaY));
+      targetFrameRef.current = Math.max(1, Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + deltaY));
     };
 
     // Keyboard navigation
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
         e.preventDefault();
-        targetFrameRef.current = Math.min(TOTAL_FRAMES, targetFrameRef.current + 15);
+        targetFrameRef.current = Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + 15);
       } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
         e.preventDefault();
         targetFrameRef.current = Math.max(1, targetFrameRef.current - 15);
@@ -207,6 +271,7 @@ export default function LandingPage({ preloadedBundle }) {
 
     animFrameId = requestAnimationFrame(loop);
     render(1);
+    updateReceptionSlide(1);
 
     return () => {
       window.removeEventListener('resize', handleResize);
@@ -253,9 +318,9 @@ export default function LandingPage({ preloadedBundle }) {
   const l4Opacity = l4In;
   const l4Y = (1 - l4In) * 6;
 
-  // Venue invitation card overlay: Only start text & overlay animation from venue frame 115 (global 515) to frame 200 (global 600)
-  // After frame 200 (frameIndex > 600), everything disappears
-  const isVenueCardActive = frameIndex >= 515 && frameIndex <= 600;
+  // Venue invitation card overlay: Only start text & overlay animation from venue frame 115 (global 515)
+  // Stays active while the reception page smoothly slides up over it
+  const isVenueCardActive = frameIndex >= 515;
 
   // Reduced intensity white cloud/fog aura focused on center: smooth fade-in from frame 515
   const cloudIn = Math.min(1, Math.max(0, (frameIndex - 515) / 8));
@@ -750,6 +815,195 @@ export default function LandingPage({ preloadedBundle }) {
           </div>
         </div>
       )}
+
+      {/* Full-screen warm wedding beige background that smoothly fades in when sliding pass half screen (z-25) */}
+      <div
+        ref={beigeBackdropRef}
+        className="absolute inset-0 pointer-events-none z-25 transition-opacity duration-150"
+        style={{
+          opacity: 0,
+          background: 'linear-gradient(to bottom, #f9f7f2 0%, #f4eee3 50%, #eae1d2 100%)',
+        }}
+      />
+
+      {/* RECEPTION PAGE: Full-page slide up over the venue with zero shadows and zero hard borders/edges (z-30) */}
+      <div
+        ref={receptionContainerRef}
+        className="absolute inset-0 w-full h-full z-30 overflow-hidden will-change-transform pointer-events-none"
+        style={{
+          transform: 'translate3d(0, 100%, 0)',
+          visibility: 'hidden',
+        }}
+      >
+        {/* Full-Page Reception Image with soft edge-blend */}
+        <picture className="absolute inset-0 w-full h-full pointer-events-none">
+          <source srcSet="/reception.webp" type="image/webp" />
+          <img
+            src="/reception.png"
+            alt="Wedding Reception - Alen & Ammu"
+            onLoad={() => setIsReceptionImgLoaded(true)}
+            className="w-full h-full object-cover object-center pointer-events-none select-none"
+            style={{
+              maskImage: 'linear-gradient(to bottom, transparent 0%, black 16px, black 100%)',
+              WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 16px, black 100%)',
+            }}
+            draggable={false}
+          />
+        </picture>
+
+        {/* Reception Details Overlay: Located strictly in the top half over the open sky */}
+        {/* Only shown when the background is fully loaded */}
+        <div
+          ref={receptionDetailsRef}
+          className="absolute top-2.5 sm:top-4 inset-x-3 sm:inset-x-4 flex flex-col items-center justify-start text-center z-10 transition-all duration-500 ease-out"
+          style={{
+            opacity: 0,
+            transform: 'translate3d(0, 10px, 0)',
+            pointerEvents: 'none',
+          }}
+        >
+          {/* Header: WEDDING RECEPTION with ornamental gold divider */}
+          <div className="flex items-center justify-center gap-2 mb-1">
+            <div className="h-[1px] w-6 sm:w-10 bg-[#9c7225]/75" />
+            <svg className="w-2.5 h-2.5 text-[#9c7225]" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
+            </svg>
+            <h3 className="font-cinzel text-xs sm:text-[13px] font-extrabold tracking-[0.28em] text-[#0d1613] uppercase leading-none">
+              Wedding Reception
+            </h3>
+            <svg className="w-2.5 h-2.5 text-[#9c7225]" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
+            </svg>
+            <div className="h-[1px] w-6 sm:w-10 bg-[#9c7225]/75" />
+          </div>
+
+          {/* Date Badge: MONDAY | 11 | JANUARY 2027 + 5:30 PM */}
+          <div className="flex flex-col items-center justify-center w-full mb-1">
+            <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 w-full max-w-[320px]">
+              {/* Left Box: MONDAY */}
+              <div className="w-[96px] sm:w-[110px] h-[28px] sm:h-[30px] flex items-center justify-center border-[1.5px] border-[#9c7225] rounded-[2px] bg-white/85 shadow-2xs shrink-0">
+                <span className="font-cinzel text-[9.5px] sm:text-[10.5px] font-extrabold text-[#0d1613] tracking-[0.18em] uppercase whitespace-nowrap">
+                  MONDAY
+                </span>
+              </div>
+
+              {/* Center Anchor: Numeral 11 */}
+              <div className="w-10 sm:w-12 flex items-center justify-center text-center shrink-0">
+                <span className="font-playfair text-4xl sm:text-[44px] font-extrabold text-[#9c7225] leading-none select-none tracking-normal">
+                  11
+                </span>
+              </div>
+
+              {/* Right Box: JANUARY 2027 */}
+              <div className="w-[96px] sm:w-[110px] h-[28px] sm:h-[30px] flex items-center justify-center border-[1.5px] border-[#9c7225] rounded-[2px] bg-white/85 shadow-2xs shrink-0">
+                <span className="font-cinzel text-[9px] sm:text-[10px] font-extrabold text-[#0d1613] tracking-[0.12em] uppercase whitespace-nowrap">
+                  JANUARY 2027
+                </span>
+              </div>
+            </div>
+
+            {/* Time: 5:30 PM */}
+            <p className="font-cinzel text-xs sm:text-[12.5px] font-extrabold text-[#0d1613] tracking-[0.22em] mt-0.5 text-center">
+              5:30 PM
+            </p>
+          </div>
+
+          {/* Dining Serving Cloche Icon & Venue Name & Address */}
+          <div className="flex flex-col items-center text-center my-0.5">
+            <svg className="w-4 h-4 text-[#9c7225] mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 4v2" />
+              <path d="M4 17a8 8 0 0 1 16 0" />
+              <path d="M2 19h20" />
+            </svg>
+            <h4 className="font-cinzel text-[11px] sm:text-[12px] font-extrabold text-[#0d1613] tracking-[0.14em] uppercase leading-tight">
+              C9 Event Center
+            </h4>
+            <p className="font-cinzel text-[8.5px] sm:text-[9px] font-semibold text-[#9c7225] tracking-[0.12em] uppercase">
+              By C9 Hospitality
+            </p>
+            <p className="font-cinzel text-[8px] sm:text-[8.5px] text-stone-700 tracking-[0.08em] mt-0.5">
+              Puthuppady, Muvattupuzha, Keralam 686673
+            </p>
+          </div>
+
+          {/* Route Section & Google Maps Directions Buttons (Replacing QR codes) */}
+          <div className="w-full max-w-[330px] flex flex-col items-center my-1 pointer-events-auto">
+            {/* Wavy Road Connector between Cathedral & C9 */}
+            <div className="flex items-center justify-between w-full px-1 mb-1.5">
+              {/* Cathedral Label */}
+              <div className="flex flex-col items-center text-center w-24 sm:w-28">
+                <svg className="w-4 h-4 text-[#9c7225] mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2v4M10 4h4" />
+                  <path d="M12 6L4 12v9h16v-9L12 6z" />
+                  <path d="M10 21v-6h4v6" />
+                </svg>
+                <span className="font-cinzel text-[7.5px] sm:text-[8.5px] font-bold text-[#0d1613] tracking-wide leading-tight">
+                  St. Thomas Cathedral
+                </span>
+              </div>
+
+              {/* Dotted Connecting Route */}
+              <div className="flex-1 flex items-center justify-center px-1">
+                <svg className="w-full h-3 text-[#9c7225]" viewBox="0 0 80 12" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+                  <path d="M 4 6 Q 22 1, 40 6 T 76 6" strokeDasharray="3 3" />
+                  <circle cx="40" cy="6" r="2" fill="currentColor" />
+                </svg>
+              </div>
+
+              {/* C9 Event Center Label */}
+              <div className="flex flex-col items-center text-center w-24 sm:w-28">
+                <svg className="w-4 h-4 text-[#9c7225] mb-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 21h18M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16" />
+                  <path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M10 21v-3h4v3" />
+                </svg>
+                <span className="font-cinzel text-[7.5px] sm:text-[8.5px] font-bold text-[#0d1613] tracking-wide leading-tight">
+                  C9 Event Center
+                </span>
+              </div>
+            </div>
+
+            {/* Google Maps Action Buttons (Replacing QR codes) */}
+            <div className="flex items-center justify-center gap-2 w-full">
+              {/* Button 1: Cathedral Map */}
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=St.+Thomas+Cathedral+Church,+Muvattupuzha"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex-1 max-w-[140px] flex items-center justify-center gap-1.5 py-1 px-2 rounded-full border-[1.5px] border-[#9c7225] bg-white/90 hover:bg-white active:scale-95 text-[#0d1613] shadow-2xs transition-all cursor-pointer group"
+              >
+                <svg className="w-3 h-3 text-[#9c7225] shrink-0 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" />
+                </svg>
+                <span className="font-cinzel text-[8.5px] sm:text-[9px] font-bold tracking-[0.1em] uppercase whitespace-nowrap">
+                  Cathedral Map
+                </span>
+              </a>
+
+              {/* Button 2: Reception Map */}
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=C9+Event+Center+By+C9+Hospitality+Puthuppady+Muvattupuzha"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="flex-1 max-w-[140px] flex items-center justify-center gap-1.5 py-1 px-2 rounded-full bg-[#9c7225] hover:bg-[#855e1a] active:scale-95 text-white shadow-2xs transition-all cursor-pointer group"
+              >
+                <svg className="w-3 h-3 text-white shrink-0 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" />
+                </svg>
+                <span className="font-cinzel text-[8.5px] sm:text-[9px] font-bold tracking-[0.1em] uppercase whitespace-nowrap">
+                  Reception Map
+                </span>
+              </a>
+            </div>
+          </div>
+
+          {/* Blessing presence line in Great Vibes font */}
+          <p className="font-script text-base sm:text-lg text-[#9c7225] text-center mt-0.5 select-none leading-none">
+            Your presence will make our day more special
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
