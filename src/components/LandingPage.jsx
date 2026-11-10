@@ -909,21 +909,18 @@ export default function LandingPage({ preloadedBundle }) {
           }}
         />
 
-        {/* Full-Page Reception Image with soft top & bottom edge-blend */}
-        <picture className="absolute inset-0 w-full h-full pointer-events-none z-10">
-          <source srcSet="/reception.webp" type="image/webp" />
-          <img
-            src="/reception.png"
-            alt="Wedding Reception - Alen & Ammu"
-            onLoad={() => setIsReceptionImgLoaded(true)}
-            className="w-full h-full object-cover object-center pointer-events-none select-none"
-            style={{
-              maskImage: 'linear-gradient(to bottom, transparent 0%, black 16px, black 84%, transparent 99%)',
-              WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 16px, black 84%, transparent 99%)',
-            }}
-            draggable={false}
-          />
-        </picture>
+        {/* Full-Page Reception Image (converted WebP with seamless bottom blend into RSVP grass) */}
+        <img
+          src="/reception.webp"
+          alt="Wedding Reception - Alen & Ammu"
+          onLoad={() => setIsReceptionImgLoaded(true)}
+          className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none z-10"
+          style={{
+            maskImage: 'linear-gradient(to bottom, black 0%, black 84%, transparent 99%)',
+            WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 84%, transparent 99%)',
+          }}
+          draggable={false}
+        />
 
         {/* Reception Details Overlay: Arched champagne-gold layout matching new reference over reception.webp open sky */}
         <div
