@@ -1009,16 +1009,17 @@ export default function LandingPage({ preloadedBundle }) {
         </div>
 
         {/* RSVP PAGE: Full-size continuation page attached directly below the Reception page */}
-        <div
+        <picture
           className="absolute left-0 right-0 top-[calc(100%-16px)] w-full h-[calc(100%+16px)] pointer-events-none overflow-hidden z-0"
         >
+          <source srcSet="/rsvp.webp" type="image/webp" />
           <img
-            src="/rsvp.webp"
+            src="/rsvp.png"
             alt="RSVP - Alen & Ammu"
             className="w-full h-full object-cover object-center pointer-events-none select-none"
             draggable={false}
           />
-        </div>
+        </picture>
       </div>
     </div>
   );
