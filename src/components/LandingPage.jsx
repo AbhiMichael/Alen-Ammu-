@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import confetti from 'canvas-confetti';
 import {
   TOTAL_LANDING_FRAMES,
   TOTAL_VENUE_FRAMES,
@@ -12,8 +13,8 @@ import {
 
 // Scroll frame 1 to 600: Landing (1-400) & Church Venue (401-600)
 // Scroll frame 601 to 720: Smooth sliding-up of the Reception page over the venue
-// Scroll frame 721 to 840: Normal vertical continuation down into the full-page RSVP section
-const TOTAL_SCROLL_FRAMES = 840;
+// Scroll frame 721 to 820: Smooth combined continuation showing Reception + RSVP seamlessly together
+const TOTAL_SCROLL_FRAMES = 820;
 
 export default function LandingPage({ preloadedBundle }) {
   const containerRef = useRef(null);
@@ -21,8 +22,74 @@ export default function LandingPage({ preloadedBundle }) {
   const receptionContainerRef = useRef(null);
   const beigeBackdropRef = useRef(null);
   const receptionDetailsRef = useRef(null);
+  const rsvpDetailsRef = useRef(null);
+  const smoothGlideRef = useRef(null);
   const [frameIndex, setFrameIndex] = useState(1);
   const [isReceptionImgLoaded, setIsReceptionImgLoaded] = useState(false);
+
+  // Interactive RSVP Modal State
+  const [isRsvpModalOpen, setIsRsvpModalOpen] = useState(false);
+  const isModalOpenRef = useRef(false);
+  useEffect(() => {
+    isModalOpenRef.current = isRsvpModalOpen;
+  }, [isRsvpModalOpen]);
+
+  const [rsvpName, setRsvpName] = useState('');
+  const [rsvpGuests, setRsvpGuests] = useState(1);
+  const [rsvpAttending, setRsvpAttending] = useState('yes');
+  const [rsvpEvents, setRsvpEvents] = useState({ church: true, reception: true });
+  const [rsvpNote, setRsvpNote] = useState('');
+  const [rsvpSubmitted, setRsvpSubmitted] = useState(() => {
+    try {
+      const saved = localStorage.getItem('alen_ammu_rsvp');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  });
+
+  const handleRsvpSubmit = (e) => {
+    e.preventDefault();
+    if (!rsvpName.trim()) return;
+    const submission = {
+      name: rsvpName.trim(),
+      attending: rsvpAttending,
+      guests: rsvpAttending === 'yes' ? rsvpGuests : 0,
+      events: rsvpAttending === 'yes' ? rsvpEvents : { church: false, reception: false },
+      note: rsvpNote.trim(),
+      submittedAt: new Date().toISOString()
+    };
+    setRsvpSubmitted(submission);
+    try {
+      localStorage.setItem('alen_ammu_rsvp', JSON.stringify(submission));
+    } catch {}
+    confetti({
+      particleCount: 75,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#fff7e6', '#f0d8a8', '#cfa962', '#9c7225']
+    });
+  };
+
+  const smoothScrollTo = (destFrame) => {
+    if (smoothGlideRef.current) cancelAnimationFrame(smoothGlideRef.current);
+    const startFrame = targetFrameRef.current;
+    const startTime = performance.now();
+    const duration = 550;
+    const step = (now) => {
+      const t = Math.min(1, (now - startTime) / duration);
+      // easeInOutCubic
+      const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+      targetFrameRef.current = startFrame + (destFrame - startFrame) * eased;
+      if (t < 1) {
+        smoothGlideRef.current = requestAnimationFrame(step);
+      } else {
+        targetFrameRef.current = destFrame;
+        smoothGlideRef.current = null;
+      }
+    };
+    smoothGlideRef.current = requestAnimationFrame(step);
+  };
 
   const bundleRef = useRef(preloadedBundle || null);
   const targetFrameRef = useRef(1);
@@ -97,6 +164,7 @@ export default function LandingPage({ preloadedBundle }) {
       const container = receptionContainerRef.current;
       const backdrop = beigeBackdropRef.current;
       const details = receptionDetailsRef.current;
+      const rsvpDetails = rsvpDetailsRef.current;
       if (!container) return;
 
       if (curr <= 600) {
@@ -108,17 +176,22 @@ export default function LandingPage({ preloadedBundle }) {
           details.style.transform = 'translate3d(0, 10px, 0)';
           details.style.pointerEvents = 'none';
         }
+        if (rsvpDetails) {
+          rsvpDetails.style.opacity = '0';
+          rsvpDetails.style.transform = 'translate3d(0, 14px, 0)';
+          rsvpDetails.style.pointerEvents = 'none';
+        }
         return;
       }
 
       container.style.visibility = 'visible';
       // Reception slide-in progress (frames 600 -> 720): 0 -> 1
       const receptionInProgress = Math.max(0, Math.min(1, (curr - 600) / 120));
-      // Continuation vertical scroll into RSVP page below reception (frames 720 -> 840): 0 -> 1
-      const rsvpScrollProgress = curr > 720 ? Math.max(0, Math.min(1, (curr - 720) / 120)) : 0;
+      // Combined continuation scroll (frames 720 -> 820): 0 -> 1
+      const rsvpScrollProgress = curr > 720 ? Math.max(0, Math.min(1, (curr - 720) / 100)) : 0;
 
-      // 100% (offscreen bottom) -> 0% (Reception full view) -> -100% (RSVP full view)
-      const translateY = (1 - receptionInProgress) * 100 - rsvpScrollProgress * 100;
+      // 100% (offscreen bottom) -> 0% (Reception full view) -> -51% (Unified Reception + RSVP One-Page composition)
+      const translateY = (1 - receptionInProgress) * 100 - rsvpScrollProgress * 51;
       container.style.transform = `translate3d(0, ${translateY.toFixed(2)}%, 0)`;
 
       // When sliding pass half of the screen (receptionInProgress > 0.5):
@@ -142,6 +215,15 @@ export default function LandingPage({ preloadedBundle }) {
           details.style.transform = 'translate3d(0, 10px, 0)';
           details.style.pointerEvents = 'none';
         }
+      }
+
+      // Smoothly reveal RSVP centerpiece composition once scrolled into combined RSVP view
+      if (rsvpDetails) {
+        const rsvpOpacity = Math.max(0, Math.min(1, (rsvpScrollProgress - 0.35) / 0.5));
+        const rsvpRise = (1 - rsvpOpacity) * 14;
+        rsvpDetails.style.opacity = rsvpOpacity.toFixed(3);
+        rsvpDetails.style.transform = `translate3d(0, ${rsvpRise.toFixed(1)}px, 0)`;
+        rsvpDetails.style.pointerEvents = rsvpOpacity > 0.5 ? 'auto' : 'none';
       }
     };
 
@@ -236,6 +318,11 @@ export default function LandingPage({ preloadedBundle }) {
 
     // Desktop mouse wheel / trackpad scroll
     const handleWheel = (e) => {
+      if (isModalOpenRef.current) return;
+      if (smoothGlideRef.current) {
+        cancelAnimationFrame(smoothGlideRef.current);
+        smoothGlideRef.current = null;
+      }
       e.preventDefault();
       const delta = e.deltaY * 0.35;
       targetFrameRef.current = Math.max(1, Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + delta));
@@ -244,9 +331,15 @@ export default function LandingPage({ preloadedBundle }) {
     // Mobile touch drag
     let lastTouchY = 0;
     const handleTouchStart = (e) => {
+      if (isModalOpenRef.current) return;
       lastTouchY = e.touches[0].clientY;
     };
     const handleTouchMove = (e) => {
+      if (isModalOpenRef.current) return;
+      if (smoothGlideRef.current) {
+        cancelAnimationFrame(smoothGlideRef.current);
+        smoothGlideRef.current = null;
+      }
       if (e.cancelable) e.preventDefault();
       const currentY = e.touches[0].clientY;
       const deltaY = (lastTouchY - currentY) * 0.45;
@@ -257,6 +350,7 @@ export default function LandingPage({ preloadedBundle }) {
 
     // Keyboard navigation
     const handleKeyDown = (e) => {
+      if (isModalOpenRef.current) return;
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
         e.preventDefault();
         targetFrameRef.current = Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + 15);
@@ -285,6 +379,7 @@ export default function LandingPage({ preloadedBundle }) {
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchmove', handleTouchMove);
       if (animFrameId) cancelAnimationFrame(animFrameId);
+      if (smoothGlideRef.current) cancelAnimationFrame(smoothGlideRef.current);
     };
   }, []);
 
@@ -831,7 +926,7 @@ export default function LandingPage({ preloadedBundle }) {
         }}
       />
 
-      {/* RECEPTION & RSVP CONTINUOUS COLUMN: Reception slides up over venue (601-720), then continues scrolling down to RSVP (721-840) (z-30) */}
+      {/* RECEPTION & RSVP CONTINUOUS COLUMN: Reception slides up over venue (601-720), then combines cleanly with RSVP (721-820) (z-30) */}
       <div
         ref={receptionContainerRef}
         className="absolute inset-0 w-full h-full z-30 overflow-visible will-change-transform pointer-events-none"
@@ -840,6 +935,14 @@ export default function LandingPage({ preloadedBundle }) {
           visibility: 'hidden',
         }}
       >
+        {/* Warm moss-green garden bridge directly behind the seamless lawn transition between Reception and RSVP */}
+        <div
+          className="absolute left-0 right-0 top-[76%] h-[36%] pointer-events-none z-[-1]"
+          style={{
+            background: 'linear-gradient(to bottom, transparent 0%, #21270d 35%, #21270d 65%, transparent 100%)',
+          }}
+        />
+
         {/* Full-Page Reception Image with soft top & bottom edge-blend */}
         <picture className="absolute inset-0 w-full h-full pointer-events-none z-10">
           <source srcSet="/reception.webp" type="image/webp" />
@@ -849,8 +952,8 @@ export default function LandingPage({ preloadedBundle }) {
             onLoad={() => setIsReceptionImgLoaded(true)}
             className="w-full h-full object-cover object-center pointer-events-none select-none"
             style={{
-              maskImage: 'linear-gradient(to bottom, transparent 0%, black 16px, black calc(100% - 16px), transparent 100%)',
-              WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 16px, black calc(100% - 16px), transparent 100%)',
+              maskImage: 'linear-gradient(to bottom, transparent 0%, black 16px, black 84%, transparent 99%)',
+              WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 16px, black 84%, transparent 99%)',
             }}
             draggable={false}
           />
@@ -1008,19 +1111,425 @@ export default function LandingPage({ preloadedBundle }) {
           </p>
         </div>
 
-        {/* RSVP PAGE: Full-size continuation page attached directly below the Reception page */}
+        {/* RSVP PAGE: Seamlessly blended below Reception so couch+stairs top & centerpiece floral table bottom frame one unified lawn page */}
         <picture
-          className="absolute left-0 right-0 top-[calc(100%-16px)] w-full h-[calc(100%+16px)] pointer-events-none overflow-hidden z-0"
+          className="absolute left-0 right-0 top-[95%] w-full h-full pointer-events-none overflow-hidden z-0"
         >
           <source srcSet="/rsvp.webp" type="image/webp" />
           <img
             src="/rsvp.png"
             alt="RSVP - Alen & Ammu"
             className="w-full h-full object-cover object-center pointer-events-none select-none"
+            style={{
+              maskImage: 'linear-gradient(to bottom, transparent 0%, black 12%, black 100%)',
+              WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 12%, black 100%)',
+            }}
             draggable={false}
           />
         </picture>
+
+        {/* RSVP CENTERPIECE CONTENT OVERLAY: Centered across the shaded sunlit lawn right between stairs and floral table */}
+        <div
+          ref={rsvpDetailsRef}
+          className="absolute left-0 right-0 top-[71%] h-[48%] flex flex-col items-center justify-center text-center z-30 px-4 transition-all duration-300 ease-out"
+          style={{
+            opacity: 0,
+            transform: 'translate3d(0, 14px, 0)',
+            pointerEvents: 'none',
+          }}
+        >
+          {/* Soft dark-olive dusk radial vignette behind the typography for seamless legibility */}
+          <div
+            className="absolute inset-0 pointer-events-none -z-10"
+            style={{
+              background:
+                'radial-gradient(ellipse 76% 58% at 50% 49%, rgba(18, 22, 8, 0.78) 0%, rgba(18, 22, 8, 0.45) 54%, transparent 100%)',
+            }}
+          />
+
+          {/* Eyebrow: YOU ARE CORDIALLY INVITED */}
+          <div className="flex items-center justify-center gap-2.5 sm:gap-3 mb-1.5">
+            <div className="h-[1px] w-7 sm:w-9 bg-[#e6d5b2]/55" />
+            <span className="font-cinzel text-[9px] sm:text-[10px] font-medium tracking-[0.26em] text-[#f2e4c7] uppercase whitespace-nowrap drop-shadow-[0_1px_3px_rgba(0,0,0,0.65)]">
+              YOU ARE CORDIALLY INVITED
+            </span>
+            <div className="h-[1px] w-7 sm:w-9 bg-[#e6d5b2]/55" />
+          </div>
+
+          {/* Botanical Leaf Sprig SVG */}
+          <svg
+            className="w-11 h-6 sm:w-12 sm:h-7 text-[#e2c685] my-0.5 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
+            viewBox="0 0 64 36"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.25"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M12 24 Q 32 16, 52 10" />
+            <path d="M20 21 C 18 14, 24 10, 28 16 C 24 19, 21 20, 20 21 Z" />
+            <path d="M23 20 C 26 26, 33 24, 31 18" />
+            <path d="M31 17 C 29 10, 36 6, 40 12 C 36 15, 33 16, 31 17 Z" />
+            <path d="M34 16 C 37 22, 44 20, 42 14" />
+            <path d="M41 13 C 41 7, 48 4, 52 9 C 48 12, 43 13, 41 13 Z" />
+            <path d="M45 12 C 47 17, 53 16, 54 11" />
+          </svg>
+
+          {/* Main Editorial RSVP Title */}
+          <h2
+            className="font-cinzel text-5xl sm:text-[54px] font-semibold tracking-[0.14em] leading-none bg-gradient-to-b from-[#fff7e6] via-[#f0d8a8] to-[#cfa962] bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)] select-none my-1"
+          >
+            RSVP
+          </h2>
+
+          {/* Subtitle: KINDLY CONFIRM YOUR ATTENDANCE */}
+          <p className="font-sans text-[9.5px] sm:text-[10.5px] font-normal tracking-[0.34em] leading-[1.6] text-[#f5ebd6]/95 uppercase drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)] mt-0.5">
+            KINDLY CONFIRM
+            <br />
+            YOUR ATTENDANCE
+          </p>
+
+          {/* Intertwined Wedding Rings Divider */}
+          <div className="flex items-center justify-center gap-3 my-2">
+            <div className="h-[1px] w-12 sm:w-16 bg-[#dec17c]/45" />
+            <svg
+              className="w-7 h-4 text-[#dfc07b] shrink-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.55)]"
+              viewBox="0 0 36 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.3"
+            >
+              <circle cx="14" cy="10" r="6.5" />
+              <circle cx="22" cy="10" r="6.5" />
+            </svg>
+            <div className="h-[1px] w-12 sm:w-16 bg-[#dec17c]/45" />
+          </div>
+
+          {/* Poetic Italic Message */}
+          <p className="font-cormorant italic text-[14.5px] sm:text-[16px] leading-[1.35] text-[#f7eedc] drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)] max-w-[290px]">
+            Your presence will make
+            <br />
+            our celebration even more special.
+          </p>
+
+          {/* Glowing Champagne-Gold Pill CTA Button */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsRsvpModalOpen(true);
+            }}
+            className="mt-3.5 sm:mt-4 inline-flex items-center justify-center gap-2.5 px-6 py-2.5 sm:px-7 sm:py-2.5 rounded-full text-[#1a130b] shadow-[0_0_24px_rgba(240,208,138,0.55),0_4px_14px_rgba(0,0,0,0.45)] hover:brightness-105 active:scale-95 transition-all cursor-pointer group"
+            style={{
+              background: 'linear-gradient(135deg, #fffaf0 0%, #f5dfb0 50%, #e4c17a 100%)',
+            }}
+          >
+            {/* Minimal Calendar Check Icon */}
+            <svg
+              className="w-4 h-4 text-[#1a130b] shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+              <path d="M9 16l2 2 4-4" />
+            </svg>
+            <span className="font-sans text-[12px] sm:text-[13px] font-semibold tracking-wide text-[#18120b]">
+              {rsvpSubmitted ? 'Update Attendance' : 'Confirm Attendance'}
+            </span>
+            {/* Minimal Right Arrow */}
+            <svg
+              className="w-4 h-4 text-[#1a130b] shrink-0 group-hover:translate-x-0.5 transition-transform"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.9"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="5" y1="12" x2="19" y2="12" />
+              <polyline points="12 5 19 12 12 19" />
+            </svg>
+          </button>
+
+          {/* View Event Details Link */}
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              smoothScrollTo(720);
+            }}
+            className="mt-3 sm:mt-3.5 flex flex-col items-center justify-center text-[#ede1c9]/85 hover:text-white transition-colors cursor-pointer group"
+          >
+            <span className="font-cormorant text-[11px] sm:text-[11.5px] tracking-[0.06em] drop-shadow-[0_1px_3px_rgba(0,0,0,0.75)]">
+              View Event Details
+            </span>
+            <svg
+              className="w-3 h-3 mt-0.5 text-[#ede1c9]/80 group-hover:translate-y-0.5 transition-transform"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </button>
+        </div>
       </div>
+
+      {/* Interactive RSVP Confirmation Modal */}
+      {isRsvpModalOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 bg-black/70 backdrop-blur-sm animate-fadeIn"
+          onClick={() => setIsRsvpModalOpen(false)}
+        >
+          <div
+            className="relative w-full max-w-[400px] rounded-2xl border border-[#dec17c]/50 bg-[#faf7f0] text-[#1a150e] shadow-[0_20px_60px_rgba(0,0,0,0.65)] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Top accent gradient */}
+            <div className="h-1.5 w-full bg-gradient-to-r from-[#cfa962] via-[#f0d8a8] to-[#9c7225]" />
+
+            {/* Close button */}
+            <button
+              type="button"
+              onClick={() => setIsRsvpModalOpen(false)}
+              aria-label="Close RSVP modal"
+              className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full flex items-center justify-center text-stone-500 hover:text-stone-900 hover:bg-stone-200/60 transition-colors cursor-pointer"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18" />
+                <line x1="6" y1="6" x2="18" y2="18" />
+              </svg>
+            </button>
+
+            <div className="p-6 max-h-[82dvh] overflow-y-auto">
+              {rsvpSubmitted ? (
+                <div className="flex flex-col items-center text-center py-2">
+                  <div className="w-12 h-12 rounded-full bg-[#9c7225]/15 border border-[#9c7225]/40 flex items-center justify-center mb-3 text-[#9c7225]">
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                  </div>
+                  <h3 className="font-cinzel text-lg font-bold tracking-[0.2em] text-[#0d1613] uppercase">
+                    Thank You, {rsvpSubmitted.name}!
+                  </h3>
+                  <p className="font-cormorant italic text-base text-stone-600 mt-1">
+                    {rsvpSubmitted.attending === 'yes'
+                      ? 'We cannot wait to celebrate our special day with you.'
+                      : 'You will be dearly missed on our special day.'}
+                  </p>
+
+                  <div className="w-full rounded-xl bg-white/80 border border-[#9c7225]/25 p-3.5 mt-4 text-left text-xs space-y-1.5 font-sans text-stone-700">
+                    <div className="flex justify-between">
+                      <span className="text-stone-500">Status</span>
+                      <span className="font-semibold text-[#9c7225]">
+                        {rsvpSubmitted.attending === 'yes' ? 'Joyfully Accepts' : 'Regretfully Declines'}
+                      </span>
+                    </div>
+                    {rsvpSubmitted.attending === 'yes' && (
+                      <>
+                        <div className="flex justify-between">
+                          <span className="text-stone-500">Guests</span>
+                          <span className="font-semibold text-stone-900">{rsvpSubmitted.guests}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-stone-500">Events</span>
+                          <span className="font-semibold text-stone-900">
+                            {[
+                              rsvpSubmitted.events?.church && 'Wedding',
+                              rsvpSubmitted.events?.reception && 'Reception'
+                            ]
+                              .filter(Boolean)
+                              .join(' & ') || 'Confirmed'}
+                          </span>
+                        </div>
+                      </>
+                    )}
+                    {rsvpSubmitted.note && (
+                      <div className="pt-1 border-t border-stone-200/70">
+                        <span className="text-stone-500 block text-[11px]">Wishes</span>
+                        <p className="italic text-stone-700 mt-0.5">"{rsvpSubmitted.note}"</p>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2.5 w-full mt-5">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setRsvpName(rsvpSubmitted.name || '');
+                        setRsvpAttending(rsvpSubmitted.attending || 'yes');
+                        setRsvpGuests(rsvpSubmitted.guests || 1);
+                        setRsvpEvents(rsvpSubmitted.events || { church: true, reception: true });
+                        setRsvpNote(rsvpSubmitted.note || '');
+                        setRsvpSubmitted(null);
+                      }}
+                      className="flex-1 py-2.5 rounded-full border border-[#9c7225] text-[#9c7225] font-cinzel text-[11px] font-bold tracking-[0.12em] uppercase hover:bg-[#9c7225]/5 cursor-pointer"
+                    >
+                      Edit Response
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setIsRsvpModalOpen(false)}
+                      className="flex-1 py-2.5 rounded-full bg-[#9c7225] text-white font-cinzel text-[11px] font-bold tracking-[0.12em] uppercase hover:bg-[#855e1a] cursor-pointer"
+                    >
+                      Done
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleRsvpSubmit} className="space-y-4">
+                  <div className="text-center">
+                    <p className="font-cinzel text-[10px] tracking-[0.26em] text-[#9c7225] font-bold uppercase">
+                      Alen &amp; Ammu
+                    </p>
+                    <h3 className="font-cinzel text-xl font-extrabold tracking-[0.18em] text-[#0d1613] uppercase mt-0.5">
+                      Confirm Attendance
+                    </h3>
+                    <p className="font-cormorant italic text-sm text-stone-600 mt-0.5">
+                      Monday, 11 January 2027
+                    </p>
+                  </div>
+
+                  {/* Full Name */}
+                  <div>
+                    <label className="block font-cinzel text-[10px] font-bold tracking-[0.16em] text-stone-700 uppercase mb-1">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={rsvpName}
+                      onChange={(e) => setRsvpName(e.target.value)}
+                      placeholder="Enter your name"
+                      className="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 bg-white text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-[#9c7225]"
+                    />
+                  </div>
+
+                  {/* Attendance Choice */}
+                  <div>
+                    <label className="block font-cinzel text-[10px] font-bold tracking-[0.16em] text-stone-700 uppercase mb-1.5">
+                      Will you be attending?
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setRsvpAttending('yes')}
+                        className={`py-2 px-3 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
+                          rsvpAttending === 'yes'
+                            ? 'border-[#9c7225] bg-[#9c7225] text-white shadow-xs'
+                            : 'border-stone-300 bg-white text-stone-700 hover:border-[#9c7225]/60'
+                        }`}
+                      >
+                        Joyfully Accepts
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRsvpAttending('no')}
+                        className={`py-2 px-3 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
+                          rsvpAttending === 'no'
+                            ? 'border-stone-700 bg-stone-800 text-white shadow-xs'
+                            : 'border-stone-300 bg-white text-stone-700 hover:border-stone-400'
+                        }`}
+                      >
+                        Regretfully Declines
+                      </button>
+                    </div>
+                  </div>
+
+                  {rsvpAttending === 'yes' && (
+                    <>
+                      {/* Number of Guests */}
+                      <div>
+                        <label className="block font-cinzel text-[10px] font-bold tracking-[0.16em] text-stone-700 uppercase mb-1.5">
+                          Number of Guests
+                        </label>
+                        <div className="flex items-center gap-2">
+                          {[1, 2, 3, 4, 5].map((num) => (
+                            <button
+                              key={num}
+                              type="button"
+                              onClick={() => setRsvpGuests(num)}
+                              className={`flex-1 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
+                                rsvpGuests === num
+                                  ? 'border-[#9c7225] bg-[#9c7225]/15 text-[#9c7225]'
+                                  : 'border-stone-300 bg-white text-stone-700'
+                              }`}
+                            >
+                              {num === 5 ? '5+' : num}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Events Attending */}
+                      <div>
+                        <label className="block font-cinzel text-[10px] font-bold tracking-[0.16em] text-stone-700 uppercase mb-1.5">
+                          Events Attending
+                        </label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setRsvpEvents((prev) => ({ ...prev, church: !prev.church }))}
+                            className={`py-2 px-2.5 rounded-lg border text-[11px] font-medium transition-all cursor-pointer ${
+                              rsvpEvents.church
+                                ? 'border-[#9c7225] bg-[#9c7225]/12 text-[#0d1613]'
+                                : 'border-stone-300 bg-white text-stone-500'
+                            }`}
+                          >
+                            Wedding (2:00 PM)
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setRsvpEvents((prev) => ({ ...prev, reception: !prev.reception }))}
+                            className={`py-2 px-2.5 rounded-lg border text-[11px] font-medium transition-all cursor-pointer ${
+                              rsvpEvents.reception
+                                ? 'border-[#9c7225] bg-[#9c7225]/12 text-[#0d1613]'
+                                : 'border-stone-300 bg-white text-stone-500'
+                            }`}
+                          >
+                            Reception (5:30 PM)
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Optional Note */}
+                  <div>
+                    <label className="block font-cinzel text-[10px] font-bold tracking-[0.16em] text-stone-700 uppercase mb-1">
+                      Warm Wishes (Optional)
+                    </label>
+                    <textarea
+                      rows={2}
+                      value={rsvpNote}
+                      onChange={(e) => setRsvpNote(e.target.value)}
+                      placeholder="Leave a blessing or note for the couple..."
+                      className="w-full px-3.5 py-2 rounded-lg border border-stone-300 bg-white text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-[#9c7225] resize-none"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    className="w-full py-3 rounded-full bg-gradient-to-r from-[#9c7225] to-[#b58732] hover:brightness-105 active:scale-[0.98] text-white font-cinzel text-xs font-bold tracking-[0.18em] uppercase shadow-md transition-all cursor-pointer"
+                  >
+                    Confirm Attendance
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
