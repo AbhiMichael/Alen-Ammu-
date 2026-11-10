@@ -1116,7 +1116,7 @@ export default function LandingPage({ preloadedBundle }) {
 
           {/* Graceful Calligraphy Presence Line + Minimal Swirl Flourish */}
           <p className="font-alex text-[15px] sm:text-[17px] text-[#8f6a24] text-center mt-1 select-none leading-none">
-            Your presence will make our day more special
+           
           </p>
           <svg className="w-16 h-2.5 text-[#9c7225]/70 mt-0.5" viewBox="0 0 80 12" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round">
             <path d="M8 4 Q 26 2, 40 9 Q 54 2, 72 4" />
