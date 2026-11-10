@@ -1104,6 +1104,15 @@ export default function LandingPage({ preloadedBundle }) {
             pointerEvents: 'none',
           }}
         >
+          {/* Very slight soft dark-olive radial tint behind texts for gentle legibility */}
+          <div
+            className="absolute inset-0 pointer-events-none -z-10"
+            style={{
+              background:
+                'radial-gradient(ellipse 76% 62% at 50% 48%, rgba(15, 19, 6, 0.28) 0%, rgba(15, 19, 6, 0.14) 55%, transparent 100%)',
+            }}
+          />
+
           {/* Top Ornamental Wedding Rings Divider + Subtle Floral Spray */}
           <div className="relative flex items-center justify-center gap-2.5 w-full max-w-[260px] mb-1.5">
             <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/65" />
