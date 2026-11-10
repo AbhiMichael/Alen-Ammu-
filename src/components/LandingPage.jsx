@@ -1206,11 +1206,11 @@ export default function LandingPage({ preloadedBundle }) {
             </svg>
           </div>
 
-          {/* Main Heading: Your presence / means so much */}
-          <h2 className="font-playfair font-normal text-[21px] sm:text-[24px] text-[#fff9ec] leading-[1.2] tracking-wide drop-shadow-[0_1px_5px_rgba(0,0,0,0.65)] select-none">
+          {/* Main Heading: Your presence / means so much in Great Vibes */}
+          <h2 className="font-script font-normal text-[23px] sm:text-[25px] text-[#fff9ec] leading-[1.15] tracking-wide drop-shadow-[0_1px_5px_rgba(0,0,0,0.65)] select-none">
             Your presence
           </h2>
-          <h3 className="font-playfair italic font-normal text-[26px] sm:text-[31px] text-[#fff9ec] leading-[1.15] mt-0.5 drop-shadow-[0_1px_5px_rgba(0,0,0,0.65)] select-none">
+          <h3 className="font-script font-normal text-[27px] sm:text-[30px] text-[#fff9ec] leading-[1.1] mt-0.5 drop-shadow-[0_1px_5px_rgba(0,0,0,0.65)] select-none">
             means so much
           </h3>
 
