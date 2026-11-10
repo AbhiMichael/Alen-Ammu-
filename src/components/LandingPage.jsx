@@ -1097,27 +1097,18 @@ export default function LandingPage({ preloadedBundle }) {
         {/* RSVP INLINE DESIGN & FORM OVERLAY: Centered across the shaded sunlit lawn right between stairs and floral table */}
         <div
           ref={rsvpDetailsRef}
-          className="absolute left-0 right-0 top-[70%] h-[49%] flex flex-col items-center justify-center text-center z-30 px-4 transition-all duration-300 ease-out"
+          className="absolute left-0 right-0 top-[68%] h-[51%] flex flex-col items-center justify-center text-center z-30 px-4 transition-all duration-300 ease-out"
           style={{
             opacity: 0,
             transform: 'translate3d(0, 14px, 0)',
             pointerEvents: 'none',
           }}
         >
-          {/* Soft dark-olive dusk radial vignette behind the RSVP block for crisp legibility */}
-          <div
-            className="absolute inset-0 pointer-events-none -z-10"
-            style={{
-              background:
-                'radial-gradient(ellipse 80% 65% at 50% 48%, rgba(19, 23, 8, 0.72) 0%, rgba(19, 23, 8, 0.42) 55%, transparent 100%)',
-            }}
-          />
-
           {/* Top Ornamental Wedding Rings Divider + Subtle Floral Spray */}
-          <div className="relative flex items-center justify-center gap-2.5 w-full max-w-[260px] mb-1">
-            <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/60" />
+          <div className="relative flex items-center justify-center gap-2.5 w-full max-w-[260px] mb-1.5">
+            <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/65" />
             <svg
-              className="w-6 h-3.5 text-[#e4c785] shrink-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]"
+              className="w-6 h-3.5 text-[#e4c785] shrink-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]"
               viewBox="0 0 36 20"
               fill="none"
               stroke="currentColor"
@@ -1126,15 +1117,15 @@ export default function LandingPage({ preloadedBundle }) {
               <circle cx="14" cy="10" r="6" />
               <circle cx="22" cy="10" r="6" />
             </svg>
-            <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/60" />
+            <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/65" />
 
             {/* Delicate curved floral blossom branch framing the upper-right of the heading */}
             <svg
-              className="absolute -right-1 top-1 w-14 h-12 pointer-events-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]"
+              className="absolute -right-1 top-1 w-14 h-12 pointer-events-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.35)]"
               viewBox="0 0 70 60"
               fill="none"
             >
-              <path d="M8 6 Q 38 14, 48 44" stroke="#d5bc82" strokeWidth="1" strokeLinecap="round" opacity="0.8" />
+              <path d="M8 6 Q 38 14, 48 44" stroke="#d5bc82" strokeWidth="1" strokeLinecap="round" opacity="0.85" />
               <path d="M22 11 C 26 6, 32 7, 30 13" stroke="#b9bc7f" strokeWidth="0.9" fill="#9ea365" fillOpacity="0.4" />
               <path d="M36 24 C 42 20, 47 23, 42 29" stroke="#b9bc7f" strokeWidth="0.9" fill="#9ea365" fillOpacity="0.4" />
               <path d="M44 37 C 50 35, 52 40, 46 43" stroke="#b9bc7f" strokeWidth="0.9" fill="#9ea365" fillOpacity="0.4" />
@@ -1160,16 +1151,16 @@ export default function LandingPage({ preloadedBundle }) {
           </div>
 
           {/* Main Heading: Your presence / means so much */}
-          <h2 className="font-playfair font-normal text-[21px] sm:text-[24px] text-[#fff9ec] leading-[1.1] tracking-wide drop-shadow-[0_1px_6px_rgba(0,0,0,0.65)] select-none">
+          <h2 className="font-playfair font-normal text-[21px] sm:text-[24px] text-[#fff9ec] leading-[1.2] tracking-wide drop-shadow-[0_1px_5px_rgba(0,0,0,0.65)] select-none">
             Your presence
           </h2>
-          <h3 className="font-playfair italic font-normal text-[26px] sm:text-[31px] text-[#fff9ec] leading-[1.05] drop-shadow-[0_1px_6px_rgba(0,0,0,0.65)] select-none">
+          <h3 className="font-playfair italic font-normal text-[26px] sm:text-[31px] text-[#fff9ec] leading-[1.15] mt-0.5 drop-shadow-[0_1px_5px_rgba(0,0,0,0.65)] select-none">
             means so much
           </h3>
 
           {/* Graceful Curved Swash + Two White Blossoms */}
           <svg
-            className="w-44 sm:w-52 h-6 sm:h-7 pointer-events-none -mt-0.5 mb-0.5 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
+            className="w-44 sm:w-52 h-6 sm:h-7 pointer-events-none mt-0.5 mb-1 drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]"
             viewBox="0 0 220 34"
             fill="none"
           >
@@ -1206,26 +1197,26 @@ export default function LandingPage({ preloadedBundle }) {
           </svg>
 
           {/* Subheading Question */}
-          <p className="font-playfair italic text-[13.5px] sm:text-[15.5px] text-[#f9f1df] tracking-wide drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)] mb-2 select-none">
+          <p className="font-playfair italic text-[13.5px] sm:text-[15.5px] text-[#f9f1df] tracking-wider leading-[1.4] drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)] mb-3.5 sm:mb-4 select-none">
             Will you celebrate with us?
           </p>
 
           {rsvpSubmitted ? (
             /* Confirmation View After Submitting Inline Form */
-            <div className="w-full max-w-[270px] sm:max-w-[288px] flex flex-col items-center text-center py-2 px-3 rounded-xl bg-black/25 backdrop-blur-xs border border-[#e2c685]/35">
-              <div className="w-8 h-8 rounded-full bg-[#e6c67c]/20 border border-[#e6c67c]/60 flex items-center justify-center mb-1.5 text-[#f4db9c]">
+            <div className="w-full max-w-[270px] sm:max-w-[288px] flex flex-col items-center text-center py-3 px-4 rounded-xl bg-black/20 backdrop-blur-xs border border-[#e2c685]/40 space-y-1.5">
+              <div className="w-8 h-8 rounded-full bg-[#e6c67c]/20 border border-[#e6c67c]/60 flex items-center justify-center text-[#f4db9c]">
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
-              <p className="font-playfair italic text-base sm:text-lg text-[#fff8eb] leading-tight">
+              <p className="font-playfair italic text-base sm:text-lg text-[#fff8eb] leading-snug">
                 Thank you, {rsvpSubmitted.name}!
               </p>
-              <p className="font-sans text-[10.5px] sm:text-[11px] text-[#efe3ca]/90 mt-1 leading-snug">
+              <p className="font-sans text-[11px] sm:text-[11.5px] text-[#efe3ca]/95 leading-relaxed">
                 Your response for <span className="font-semibold text-[#f4db9c]">{rsvpSubmitted.guests}</span> {Number(rsvpSubmitted.guests) > 1 ? 'guests' : 'guest'} has been received.
               </p>
               {rsvpSubmitted.note && (
-                <p className="font-cormorant italic text-[13px] text-[#e6d5b2] mt-1 line-clamp-2">
+                <p className="font-cormorant italic text-[13.5px] text-[#e6d5b2] leading-snug line-clamp-2">
                   "{rsvpSubmitted.note}"
                 </p>
               )}
@@ -1239,20 +1230,20 @@ export default function LandingPage({ preloadedBundle }) {
                   setRsvpNote(rsvpSubmitted.note || '');
                   setRsvpSubmitted(null);
                 }}
-                className="mt-2.5 px-5 py-1.5 rounded-full border border-[#e6c67c]/70 text-[#f4db9c] font-playfair text-xs hover:bg-[#e6c67c]/15 transition-colors cursor-pointer"
+                className="mt-2 px-5 py-1.5 rounded-full border border-[#e6c67c]/70 text-[#f4db9c] font-playfair text-xs hover:bg-[#e6c67c]/15 transition-colors cursor-pointer"
               >
                 Edit Response
               </button>
             </div>
           ) : (
-            /* Direct Inline Minimal Underline Form */
+            /* Direct Inline Minimal Underline Form with generous vertical spacing */
             <form
               onSubmit={handleRsvpSubmit}
-              className="w-full max-w-[268px] sm:max-w-[288px] flex flex-col items-center space-y-1.5 sm:space-y-2"
+              className="w-full max-w-[272px] sm:max-w-[292px] flex flex-col items-center space-y-3 sm:space-y-3.5"
             >
               {/* Field 1: Name */}
-              <div className="w-full flex items-center gap-2.5 border-b border-[#d6b97a]/55 focus-within:border-[#f4db9c] pb-1 pt-0.5 transition-colors">
-                <svg className="w-4 h-4 text-[#e5c989] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+              <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-2 pt-0.5 transition-colors">
+                <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
                 </svg>
@@ -1265,13 +1256,13 @@ export default function LandingPage({ preloadedBundle }) {
                   }}
                   onClick={(e) => e.stopPropagation()}
                   placeholder="Name"
-                  className="w-full bg-transparent text-[13px] sm:text-[14px] text-[#fff8eb] placeholder:font-alex placeholder:text-[17px] placeholder:text-[#efe3ca]/90 outline-none select-text"
+                  className="w-full bg-transparent text-[13.5px] sm:text-[14px] leading-relaxed text-[#fff8eb] placeholder:font-alex placeholder:text-[17px] placeholder:tracking-wide placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
                 />
               </div>
 
               {/* Field 2: Phone */}
-              <div className="w-full flex items-center gap-2.5 border-b border-[#d6b97a]/55 focus-within:border-[#f4db9c] pb-1 pt-0.5 transition-colors">
-                <svg className="w-4 h-4 text-[#e5c989] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+              <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-2 pt-0.5 transition-colors">
+                <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
                 <input
@@ -1280,13 +1271,13 @@ export default function LandingPage({ preloadedBundle }) {
                   onChange={(e) => setRsvpPhone(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
                   placeholder="Phone"
-                  className="w-full bg-transparent text-[13px] sm:text-[14px] text-[#fff8eb] placeholder:font-alex placeholder:text-[17px] placeholder:text-[#efe3ca]/90 outline-none select-text"
+                  className="w-full bg-transparent text-[13.5px] sm:text-[14px] leading-relaxed text-[#fff8eb] placeholder:font-alex placeholder:text-[17px] placeholder:tracking-wide placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
                 />
               </div>
 
               {/* Field 3: Number of Guest Dropdown */}
-              <div className="relative w-full flex items-center gap-2.5 border-b border-[#d6b97a]/55 focus-within:border-[#f4db9c] pb-1 pt-0.5 transition-colors">
-                <svg className="w-4 h-4 text-[#e5c989] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+              <div className="relative w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-2 pt-0.5 transition-colors">
+                <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
                   <circle cx="9" cy="7" r="4" />
                   <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
@@ -1296,10 +1287,10 @@ export default function LandingPage({ preloadedBundle }) {
                   value={rsvpGuests}
                   onChange={(e) => setRsvpGuests(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
-                  className={`w-full appearance-none bg-transparent outline-none cursor-pointer pr-5 ${
+                  className={`w-full appearance-none bg-transparent leading-relaxed outline-none cursor-pointer pr-5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${
                     rsvpGuests === ''
-                      ? 'font-alex text-[17px] text-[#efe3ca]/90'
-                      : 'text-[13px] sm:text-[14px] text-[#fff8eb]'
+                      ? 'font-alex text-[17px] tracking-wide text-[#efe3ca]/95'
+                      : 'text-[13.5px] sm:text-[14px] text-[#fff8eb]'
                   }`}
                 >
                   <option value="" disabled className="bg-[#21270d] text-[#efe3ca]">
@@ -1312,7 +1303,7 @@ export default function LandingPage({ preloadedBundle }) {
                   <option value="5+" className="bg-[#21270d] text-[#fff8eb]">5+ Guests</option>
                 </select>
                 <svg
-                  className="w-3.5 h-3.5 text-[#e5c989] absolute right-0.5 pointer-events-none"
+                  className="w-3.5 h-3.5 text-[#e5c989] absolute right-0.5 pointer-events-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -1325,8 +1316,8 @@ export default function LandingPage({ preloadedBundle }) {
               </div>
 
               {/* Field 4: Send your Wishes... */}
-              <div className="w-full flex items-center gap-2.5 border-b border-[#d6b97a]/55 focus-within:border-[#f4db9c] pb-1 pt-0.5 transition-colors">
-                <svg className="w-4 h-4 text-[#e5c989] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+              <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-2 pt-0.5 transition-colors">
+                <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 20h9" />
                   <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
                 </svg>
@@ -1336,12 +1327,12 @@ export default function LandingPage({ preloadedBundle }) {
                   onChange={(e) => setRsvpNote(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
                   placeholder="Send your Wishes..."
-                  className="w-full bg-transparent text-[13px] sm:text-[14px] text-[#fff8eb] placeholder:font-alex placeholder:text-[17px] placeholder:text-[#efe3ca]/90 outline-none select-text"
+                  className="w-full bg-transparent text-[13.5px] sm:text-[14px] leading-relaxed text-[#fff8eb] placeholder:font-alex placeholder:text-[17px] placeholder:tracking-wide placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
                 />
               </div>
 
               {rsvpError && (
-                <p className="text-[11px] text-[#ffcf99] tracking-wide pt-0.5">
+                <p className="text-[11px] text-[#ffcf99] tracking-wide pt-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
                   {rsvpError}
                 </p>
               )}
@@ -1350,7 +1341,7 @@ export default function LandingPage({ preloadedBundle }) {
               <button
                 type="submit"
                 onClick={(e) => e.stopPropagation()}
-                className="mt-2.5 sm:mt-3 inline-flex items-center justify-center gap-2 px-8 py-2 rounded-full text-[#1a130a] shadow-[0_0_20px_rgba(236,199,118,0.45),0_4px_12px_rgba(0,0,0,0.45)] hover:brightness-105 active:scale-95 transition-all cursor-pointer group"
+                className="mt-3 sm:mt-4 inline-flex items-center justify-center gap-2 px-8 py-2 rounded-full text-[#1a130a] shadow-[0_0_20px_rgba(236,199,118,0.45),0_4px_12px_rgba(0,0,0,0.4)] hover:brightness-105 active:scale-95 transition-all cursor-pointer group"
                 style={{
                   background: 'linear-gradient(135deg, #fff5dc 0%, #efd291 50%, #d8ae5e 100%)',
                 }}
@@ -1375,10 +1366,10 @@ export default function LandingPage({ preloadedBundle }) {
           )}
 
           {/* Bottom Ornamental Ribbon Bow Divider */}
-          <div className="flex items-center justify-center gap-2.5 w-full max-w-[200px] mt-2.5 sm:mt-3">
-            <div className="h-[1px] w-10 sm:w-12 bg-[#dec17c]/55" />
+          <div className="flex items-center justify-center gap-2.5 w-full max-w-[200px] mt-3 sm:mt-3.5">
+            <div className="h-[1px] w-10 sm:w-12 bg-[#dec17c]/60" />
             <svg
-              className="w-5 h-4 text-[#e2c685] shrink-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]"
+              className="w-5 h-4 text-[#e2c685] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]"
               viewBox="0 0 28 20"
               fill="none"
               stroke="currentColor"
@@ -1394,7 +1385,7 @@ export default function LandingPage({ preloadedBundle }) {
               <path d="M14 9 L 10 17" />
               <path d="M14 9 L 18 17" />
             </svg>
-            <div className="h-[1px] w-10 sm:w-12 bg-[#dec17c]/55" />
+            <div className="h-[1px] w-10 sm:w-12 bg-[#dec17c]/60" />
           </div>
         </div>
       </div>
