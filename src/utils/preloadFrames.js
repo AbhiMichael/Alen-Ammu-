@@ -131,7 +131,7 @@ export const preloadAllImages = (onProgress) => {
     // 2. Venue frames 1 to 200
     const tasks = [];
 
-    // Preload title and reception images in parallel
+    // Preload title, reception, and rsvp images in parallel
     const titleImg = new Image();
     titleImg.decoding = 'async';
     titleImg.src = '/title.webp';
@@ -139,6 +139,10 @@ export const preloadAllImages = (onProgress) => {
     const receptionImg = new Image();
     receptionImg.decoding = 'async';
     receptionImg.src = '/reception.webp';
+
+    const rsvpImg = new Image();
+    rsvpImg.decoding = 'async';
+    rsvpImg.src = '/rsvp.webp';
 
     for (let i = 1; i <= TOTAL_LANDING_FRAMES; i++) {
       tasks.push({ type: 'landing', index: i });

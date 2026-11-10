@@ -12,7 +12,8 @@ import {
 
 // Scroll frame 1 to 600: Landing (1-400) & Church Venue (401-600)
 // Scroll frame 601 to 720: Smooth sliding-up of the Reception page over the venue
-const TOTAL_SCROLL_FRAMES = 720;
+// Scroll frame 721 to 840: Normal vertical continuation down into the full-page RSVP section
+const TOTAL_SCROLL_FRAMES = 840;
 
 export default function LandingPage({ preloadedBundle }) {
   const containerRef = useRef(null);
@@ -111,24 +112,28 @@ export default function LandingPage({ preloadedBundle }) {
       }
 
       container.style.visibility = 'visible';
-      // Progress from 0 at frame 600 to 1 at frame 720
-      const progress = Math.max(0, Math.min(1, (curr - 600) / 120));
-      const translateY = (1 - progress) * 100;
+      // Reception slide-in progress (frames 600 -> 720): 0 -> 1
+      const receptionInProgress = Math.max(0, Math.min(1, (curr - 600) / 120));
+      // Continuation vertical scroll into RSVP page below reception (frames 720 -> 840): 0 -> 1
+      const rsvpScrollProgress = curr > 720 ? Math.max(0, Math.min(1, (curr - 720) / 120)) : 0;
+
+      // 100% (offscreen bottom) -> 0% (Reception full view) -> -100% (RSVP full view)
+      const translateY = (1 - receptionInProgress) * 100 - rsvpScrollProgress * 100;
       container.style.transform = `translate3d(0, ${translateY.toFixed(2)}%, 0)`;
 
-      // When sliding pass half of the screen (progress > 0.5):
+      // When sliding pass half of the screen (receptionInProgress > 0.5):
       // background colour changes to beige
-      if (progress <= 0.5) {
+      if (receptionInProgress <= 0.5) {
         if (backdrop) backdrop.style.opacity = '0';
       } else {
         // Smooth fade-in to warm wedding beige from 0.5 to 0.85
-        const beigeFactor = Math.min(1, (progress - 0.5) / 0.35);
+        const beigeFactor = Math.min(1, (receptionInProgress - 0.5) / 0.35);
         if (backdrop) backdrop.style.opacity = beigeFactor.toFixed(3);
       }
 
-      // Only show texts when the background is fully loaded (progress >= 0.95)
+      // Only show reception texts when the background is fully loaded (receptionInProgress >= 0.95)
       if (details) {
-        if (progress >= 0.95) {
+        if (receptionInProgress >= 0.95) {
           details.style.opacity = '1';
           details.style.transform = 'translate3d(0, 0, 0)';
           details.style.pointerEvents = 'auto';
@@ -826,17 +831,17 @@ export default function LandingPage({ preloadedBundle }) {
         }}
       />
 
-      {/* RECEPTION PAGE: Full-page slide up over the venue with zero shadows and zero hard borders/edges (z-30) */}
+      {/* RECEPTION & RSVP CONTINUOUS COLUMN: Reception slides up over venue (601-720), then continues scrolling down to RSVP (721-840) (z-30) */}
       <div
         ref={receptionContainerRef}
-        className="absolute inset-0 w-full h-full z-30 overflow-hidden will-change-transform pointer-events-none"
+        className="absolute inset-0 w-full h-full z-30 overflow-visible will-change-transform pointer-events-none"
         style={{
           transform: 'translate3d(0, 100%, 0)',
           visibility: 'hidden',
         }}
       >
-        {/* Full-Page Reception Image with soft edge-blend */}
-        <picture className="absolute inset-0 w-full h-full pointer-events-none">
+        {/* Full-Page Reception Image with soft top & bottom edge-blend */}
+        <picture className="absolute inset-0 w-full h-full pointer-events-none z-10">
           <source srcSet="/reception.webp" type="image/webp" />
           <img
             src="/reception.png"
@@ -844,8 +849,8 @@ export default function LandingPage({ preloadedBundle }) {
             onLoad={() => setIsReceptionImgLoaded(true)}
             className="w-full h-full object-cover object-center pointer-events-none select-none"
             style={{
-              maskImage: 'linear-gradient(to bottom, transparent 0%, black 16px, black 100%)',
-              WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 16px, black 100%)',
+              maskImage: 'linear-gradient(to bottom, transparent 0%, black 16px, black calc(100% - 16px), transparent 100%)',
+              WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 16px, black calc(100% - 16px), transparent 100%)',
             }}
             draggable={false}
           />
@@ -855,7 +860,7 @@ export default function LandingPage({ preloadedBundle }) {
         {/* Compact, cleanly spaced, utilizes upper space above the arch with zero flower overlap */}
         <div
           ref={receptionDetailsRef}
-          className="absolute top-4 sm:top-5 inset-x-3 sm:inset-x-4 flex flex-col items-center justify-start text-center z-10 transition-all duration-500 ease-out"
+          className="absolute top-4 sm:top-5 inset-x-3 sm:inset-x-4 flex flex-col items-center justify-start text-center z-20 transition-all duration-500 ease-out"
           style={{
             opacity: 0,
             transform: 'translate3d(0, 10px, 0)',
@@ -1001,6 +1006,18 @@ export default function LandingPage({ preloadedBundle }) {
           <p className="font-script text-sm sm:text-base text-[#9c7225] text-center mt-1 select-none leading-none">
             Your presence will make our day more special
           </p>
+        </div>
+
+        {/* RSVP PAGE: Full-size continuation page attached directly below the Reception page */}
+        <div
+          className="absolute left-0 right-0 top-[calc(100%-16px)] w-full h-[calc(100%+16px)] pointer-events-none overflow-hidden z-0"
+        >
+          <img
+            src="/rsvp.webp"
+            alt="RSVP - Alen & Ammu"
+            className="w-full h-full object-cover object-center pointer-events-none select-none"
+            draggable={false}
+          />
         </div>
       </div>
     </div>
