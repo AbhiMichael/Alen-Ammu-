@@ -23,22 +23,15 @@ export default function LandingPage({ preloadedBundle }) {
   const beigeBackdropRef = useRef(null);
   const receptionDetailsRef = useRef(null);
   const rsvpDetailsRef = useRef(null);
-  const smoothGlideRef = useRef(null);
   const [frameIndex, setFrameIndex] = useState(1);
   const [isReceptionImgLoaded, setIsReceptionImgLoaded] = useState(false);
 
-  // Interactive RSVP Modal State
-  const [isRsvpModalOpen, setIsRsvpModalOpen] = useState(false);
-  const isModalOpenRef = useRef(false);
-  useEffect(() => {
-    isModalOpenRef.current = isRsvpModalOpen;
-  }, [isRsvpModalOpen]);
-
+  // Inline RSVP Form State
   const [rsvpName, setRsvpName] = useState('');
-  const [rsvpGuests, setRsvpGuests] = useState(1);
-  const [rsvpAttending, setRsvpAttending] = useState('yes');
-  const [rsvpEvents, setRsvpEvents] = useState({ church: true, reception: true });
+  const [rsvpPhone, setRsvpPhone] = useState('');
+  const [rsvpGuests, setRsvpGuests] = useState('');
   const [rsvpNote, setRsvpNote] = useState('');
+  const [rsvpError, setRsvpError] = useState('');
   const [rsvpSubmitted, setRsvpSubmitted] = useState(() => {
     try {
       const saved = localStorage.getItem('alen_ammu_rsvp');
@@ -50,12 +43,16 @@ export default function LandingPage({ preloadedBundle }) {
 
   const handleRsvpSubmit = (e) => {
     e.preventDefault();
-    if (!rsvpName.trim()) return;
+    e.stopPropagation();
+    if (!rsvpName.trim()) {
+      setRsvpError('Please enter your name');
+      return;
+    }
+    setRsvpError('');
     const submission = {
       name: rsvpName.trim(),
-      attending: rsvpAttending,
-      guests: rsvpAttending === 'yes' ? rsvpGuests : 0,
-      events: rsvpAttending === 'yes' ? rsvpEvents : { church: false, reception: false },
+      phone: rsvpPhone.trim(),
+      guests: rsvpGuests || '1',
       note: rsvpNote.trim(),
       submittedAt: new Date().toISOString()
     };
@@ -69,26 +66,6 @@ export default function LandingPage({ preloadedBundle }) {
       origin: { y: 0.6 },
       colors: ['#fff7e6', '#f0d8a8', '#cfa962', '#9c7225']
     });
-  };
-
-  const smoothScrollTo = (destFrame) => {
-    if (smoothGlideRef.current) cancelAnimationFrame(smoothGlideRef.current);
-    const startFrame = targetFrameRef.current;
-    const startTime = performance.now();
-    const duration = 550;
-    const step = (now) => {
-      const t = Math.min(1, (now - startTime) / duration);
-      // easeInOutCubic
-      const eased = t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-      targetFrameRef.current = startFrame + (destFrame - startFrame) * eased;
-      if (t < 1) {
-        smoothGlideRef.current = requestAnimationFrame(step);
-      } else {
-        targetFrameRef.current = destFrame;
-        smoothGlideRef.current = null;
-      }
-    };
-    smoothGlideRef.current = requestAnimationFrame(step);
   };
 
   const bundleRef = useRef(preloadedBundle || null);
@@ -318,11 +295,6 @@ export default function LandingPage({ preloadedBundle }) {
 
     // Desktop mouse wheel / trackpad scroll
     const handleWheel = (e) => {
-      if (isModalOpenRef.current) return;
-      if (smoothGlideRef.current) {
-        cancelAnimationFrame(smoothGlideRef.current);
-        smoothGlideRef.current = null;
-      }
       e.preventDefault();
       const delta = e.deltaY * 0.35;
       targetFrameRef.current = Math.max(1, Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + delta));
@@ -331,15 +303,10 @@ export default function LandingPage({ preloadedBundle }) {
     // Mobile touch drag
     let lastTouchY = 0;
     const handleTouchStart = (e) => {
-      if (isModalOpenRef.current) return;
       lastTouchY = e.touches[0].clientY;
     };
     const handleTouchMove = (e) => {
-      if (isModalOpenRef.current) return;
-      if (smoothGlideRef.current) {
-        cancelAnimationFrame(smoothGlideRef.current);
-        smoothGlideRef.current = null;
-      }
+      if (e.target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
       if (e.cancelable) e.preventDefault();
       const currentY = e.touches[0].clientY;
       const deltaY = (lastTouchY - currentY) * 0.45;
@@ -350,7 +317,7 @@ export default function LandingPage({ preloadedBundle }) {
 
     // Keyboard navigation
     const handleKeyDown = (e) => {
-      if (isModalOpenRef.current) return;
+      if (e.target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
         e.preventDefault();
         targetFrameRef.current = Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + 15);
@@ -379,7 +346,6 @@ export default function LandingPage({ preloadedBundle }) {
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchmove', handleTouchMove);
       if (animFrameId) cancelAnimationFrame(animFrameId);
-      if (smoothGlideRef.current) cancelAnimationFrame(smoothGlideRef.current);
     };
   }, []);
 
@@ -967,7 +933,7 @@ export default function LandingPage({ preloadedBundle }) {
           style={{
             opacity: 0,
             transform: 'translate3d(0, 10px, 0)',
-            pointerEvents: 'none',
+            pointerEvents: 'none',  
           }}
         >
           {/* Header: WEDDING RECEPTION with ornamental gold divider */}
@@ -1128,408 +1094,310 @@ export default function LandingPage({ preloadedBundle }) {
           />
         </picture>
 
-        {/* RSVP CENTERPIECE CONTENT OVERLAY: Centered across the shaded sunlit lawn right between stairs and floral table */}
+        {/* RSVP INLINE DESIGN & FORM OVERLAY: Centered across the shaded sunlit lawn right between stairs and floral table */}
         <div
           ref={rsvpDetailsRef}
-          className="absolute left-0 right-0 top-[71%] h-[48%] flex flex-col items-center justify-center text-center z-30 px-4 transition-all duration-300 ease-out"
+          className="absolute left-0 right-0 top-[70%] h-[49%] flex flex-col items-center justify-center text-center z-30 px-4 transition-all duration-300 ease-out"
           style={{
             opacity: 0,
             transform: 'translate3d(0, 14px, 0)',
             pointerEvents: 'none',
           }}
         >
-          {/* Soft dark-olive dusk radial vignette behind the typography for seamless legibility */}
+          {/* Soft dark-olive dusk radial vignette behind the RSVP block for crisp legibility */}
           <div
             className="absolute inset-0 pointer-events-none -z-10"
             style={{
               background:
-                'radial-gradient(ellipse 76% 58% at 50% 49%, rgba(18, 22, 8, 0.78) 0%, rgba(18, 22, 8, 0.45) 54%, transparent 100%)',
+                'radial-gradient(ellipse 80% 65% at 50% 48%, rgba(19, 23, 8, 0.72) 0%, rgba(19, 23, 8, 0.42) 55%, transparent 100%)',
             }}
           />
 
-          {/* Eyebrow: YOU ARE CORDIALLY INVITED */}
-          <div className="flex items-center justify-center gap-2.5 sm:gap-3 mb-1.5">
-            <div className="h-[1px] w-7 sm:w-9 bg-[#e6d5b2]/55" />
-            <span className="font-cinzel text-[9px] sm:text-[10px] font-medium tracking-[0.26em] text-[#f2e4c7] uppercase whitespace-nowrap drop-shadow-[0_1px_3px_rgba(0,0,0,0.65)]">
-              YOU ARE CORDIALLY INVITED
-            </span>
-            <div className="h-[1px] w-7 sm:w-9 bg-[#e6d5b2]/55" />
-          </div>
-
-          {/* Botanical Leaf Sprig SVG */}
-          <svg
-            className="w-11 h-6 sm:w-12 sm:h-7 text-[#e2c685] my-0.5 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
-            viewBox="0 0 64 36"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.25"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M12 24 Q 32 16, 52 10" />
-            <path d="M20 21 C 18 14, 24 10, 28 16 C 24 19, 21 20, 20 21 Z" />
-            <path d="M23 20 C 26 26, 33 24, 31 18" />
-            <path d="M31 17 C 29 10, 36 6, 40 12 C 36 15, 33 16, 31 17 Z" />
-            <path d="M34 16 C 37 22, 44 20, 42 14" />
-            <path d="M41 13 C 41 7, 48 4, 52 9 C 48 12, 43 13, 41 13 Z" />
-            <path d="M45 12 C 47 17, 53 16, 54 11" />
-          </svg>
-
-          {/* Main Editorial RSVP Title */}
-          <h2
-            className="font-cinzel text-5xl sm:text-[54px] font-semibold tracking-[0.14em] leading-none bg-gradient-to-b from-[#fff7e6] via-[#f0d8a8] to-[#cfa962] bg-clip-text text-transparent drop-shadow-[0_2px_10px_rgba(0,0,0,0.65)] select-none my-1"
-          >
-            RSVP
-          </h2>
-
-          {/* Subtitle: KINDLY CONFIRM YOUR ATTENDANCE */}
-          <p className="font-sans text-[9.5px] sm:text-[10.5px] font-normal tracking-[0.34em] leading-[1.6] text-[#f5ebd6]/95 uppercase drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)] mt-0.5">
-            KINDLY CONFIRM
-            <br />
-            YOUR ATTENDANCE
-          </p>
-
-          {/* Intertwined Wedding Rings Divider */}
-          <div className="flex items-center justify-center gap-3 my-2">
-            <div className="h-[1px] w-12 sm:w-16 bg-[#dec17c]/45" />
+          {/* Top Ornamental Wedding Rings Divider + Subtle Floral Spray */}
+          <div className="relative flex items-center justify-center gap-2.5 w-full max-w-[260px] mb-1">
+            <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/60" />
             <svg
-              className="w-7 h-4 text-[#dfc07b] shrink-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.55)]"
+              className="w-6 h-3.5 text-[#e4c785] shrink-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]"
               viewBox="0 0 36 20"
               fill="none"
               stroke="currentColor"
-              strokeWidth="1.3"
+              strokeWidth="1.35"
             >
-              <circle cx="14" cy="10" r="6.5" />
-              <circle cx="22" cy="10" r="6.5" />
+              <circle cx="14" cy="10" r="6" />
+              <circle cx="22" cy="10" r="6" />
             </svg>
-            <div className="h-[1px] w-12 sm:w-16 bg-[#dec17c]/45" />
+            <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/60" />
+
+            {/* Delicate curved floral blossom branch framing the upper-right of the heading */}
+            <svg
+              className="absolute -right-1 top-1 w-14 h-12 pointer-events-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]"
+              viewBox="0 0 70 60"
+              fill="none"
+            >
+              <path d="M8 6 Q 38 14, 48 44" stroke="#d5bc82" strokeWidth="1" strokeLinecap="round" opacity="0.8" />
+              <path d="M22 11 C 26 6, 32 7, 30 13" stroke="#b9bc7f" strokeWidth="0.9" fill="#9ea365" fillOpacity="0.4" />
+              <path d="M36 24 C 42 20, 47 23, 42 29" stroke="#b9bc7f" strokeWidth="0.9" fill="#9ea365" fillOpacity="0.4" />
+              <path d="M44 37 C 50 35, 52 40, 46 43" stroke="#b9bc7f" strokeWidth="0.9" fill="#9ea365" fillOpacity="0.4" />
+              {/* Tiny white blossom 1 */}
+              <g transform="translate(27 12)">
+                <circle cx="0" cy="-3.5" r="2.2" fill="#fffdf7" />
+                <circle cx="3.3" cy="-1" r="2.2" fill="#fffdf7" />
+                <circle cx="2" cy="3" r="2.2" fill="#fffdf7" />
+                <circle cx="-2" cy="3" r="2.2" fill="#fffdf7" />
+                <circle cx="-3.3" cy="-1" r="2.2" fill="#fffdf7" />
+                <circle cx="0" cy="0" r="1.4" fill="#d9a63a" />
+              </g>
+              {/* Tiny white blossom 2 */}
+              <g transform="translate(40 24) scale(0.8)">
+                <circle cx="0" cy="-3.5" r="2.2" fill="#fffdf7" />
+                <circle cx="3.3" cy="-1" r="2.2" fill="#fffdf7" />
+                <circle cx="2" cy="3" r="2.2" fill="#fffdf7" />
+                <circle cx="-2" cy="3" r="2.2" fill="#fffdf7" />
+                <circle cx="-3.3" cy="-1" r="2.2" fill="#fffdf7" />
+                <circle cx="0" cy="0" r="1.4" fill="#d9a63a" />
+              </g>
+            </svg>
           </div>
 
-          {/* Poetic Italic Message */}
-          <p className="font-cormorant italic text-[14.5px] sm:text-[16px] leading-[1.35] text-[#f7eedc] drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)] max-w-[290px]">
-            Your presence will make
-            <br />
-            our celebration even more special.
+          {/* Main Heading: Your presence / means so much */}
+          <h2 className="font-playfair font-normal text-[21px] sm:text-[24px] text-[#fff9ec] leading-[1.1] tracking-wide drop-shadow-[0_1px_6px_rgba(0,0,0,0.65)] select-none">
+            Your presence
+          </h2>
+          <h3 className="font-playfair italic font-normal text-[26px] sm:text-[31px] text-[#fff9ec] leading-[1.05] drop-shadow-[0_1px_6px_rgba(0,0,0,0.65)] select-none">
+            means so much
+          </h3>
+
+          {/* Graceful Curved Swash + Two White Blossoms */}
+          <svg
+            className="w-44 sm:w-52 h-6 sm:h-7 pointer-events-none -mt-0.5 mb-0.5 drop-shadow-[0_1px_4px_rgba(0,0,0,0.5)]"
+            viewBox="0 0 220 34"
+            fill="none"
+          >
+            {/* Flowing cream calligraphy swash */}
+            <path
+              d="M12 21 C 52 8, 96 9, 148 22 C 166 26, 182 24, 196 17"
+              stroke="#fff7e6"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              opacity="0.92"
+            />
+            {/* Delicate leaves around right end */}
+            <path d="M180 18 C 175 11, 182 6, 187 12 Z" fill="#909b54" opacity="0.85" />
+            <path d="M196 16 C 201 10, 208 11, 204 17 Z" fill="#909b54" opacity="0.85" />
+            <path d="M192 22 C 198 27, 205 25, 201 19 Z" fill="#7d8945" opacity="0.85" />
+            {/* Main white 5-petal blossom */}
+            <g transform="translate(186 19)">
+              <circle cx="0" cy="-4.5" r="3" fill="#fffdf8" />
+              <circle cx="4.3" cy="-1.4" r="3" fill="#fffdf8" />
+              <circle cx="2.7" cy="3.6" r="3" fill="#fffdf8" />
+              <circle cx="-2.7" cy="3.6" r="3" fill="#fffdf8" />
+              <circle cx="-4.3" cy="-1.4" r="3" fill="#fffdf8" />
+              <circle cx="0" cy="0" r="1.8" fill="#d9a538" />
+            </g>
+            {/* Smaller companion white blossom */}
+            <g transform="translate(198 13) scale(0.72)">
+              <circle cx="0" cy="-4.5" r="3" fill="#fffdf8" />
+              <circle cx="4.3" cy="-1.4" r="3" fill="#fffdf8" />
+              <circle cx="2.7" cy="3.6" r="3" fill="#fffdf8" />
+              <circle cx="-2.7" cy="3.6" r="3" fill="#fffdf8" />
+              <circle cx="-4.3" cy="-1.4" r="3" fill="#fffdf8" />
+              <circle cx="0" cy="0" r="1.8" fill="#d9a538" />
+            </g>
+          </svg>
+
+          {/* Subheading Question */}
+          <p className="font-playfair italic text-[13.5px] sm:text-[15.5px] text-[#f9f1df] tracking-wide drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)] mb-2 select-none">
+            Will you celebrate with us?
           </p>
 
-          {/* Glowing Champagne-Gold Pill CTA Button */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsRsvpModalOpen(true);
-            }}
-            className="mt-3.5 sm:mt-4 inline-flex items-center justify-center gap-2.5 px-6 py-2.5 sm:px-7 sm:py-2.5 rounded-full text-[#1a130b] shadow-[0_0_24px_rgba(240,208,138,0.55),0_4px_14px_rgba(0,0,0,0.45)] hover:brightness-105 active:scale-95 transition-all cursor-pointer group"
-            style={{
-              background: 'linear-gradient(135deg, #fffaf0 0%, #f5dfb0 50%, #e4c17a 100%)',
-            }}
-          >
-            {/* Minimal Calendar Check Icon */}
-            <svg
-              className="w-4 h-4 text-[#1a130b] shrink-0"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-              <line x1="16" y1="2" x2="16" y2="6" />
-              <line x1="8" y1="2" x2="8" y2="6" />
-              <line x1="3" y1="10" x2="21" y2="10" />
-              <path d="M9 16l2 2 4-4" />
-            </svg>
-            <span className="font-sans text-[12px] sm:text-[13px] font-semibold tracking-wide text-[#18120b]">
-              {rsvpSubmitted ? 'Update Attendance' : 'Confirm Attendance'}
-            </span>
-            {/* Minimal Right Arrow */}
-            <svg
-              className="w-4 h-4 text-[#1a130b] shrink-0 group-hover:translate-x-0.5 transition-transform"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.9"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </button>
-
-          {/* View Event Details Link */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.stopPropagation();
-              smoothScrollTo(720);
-            }}
-            className="mt-3 sm:mt-3.5 flex flex-col items-center justify-center text-[#ede1c9]/85 hover:text-white transition-colors cursor-pointer group"
-          >
-            <span className="font-cormorant text-[11px] sm:text-[11.5px] tracking-[0.06em] drop-shadow-[0_1px_3px_rgba(0,0,0,0.75)]">
-              View Event Details
-            </span>
-            <svg
-              className="w-3 h-3 mt-0.5 text-[#ede1c9]/80 group-hover:translate-y-0.5 transition-transform"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      {/* Interactive RSVP Confirmation Modal */}
-      {isRsvpModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center px-4 py-6 bg-black/70 backdrop-blur-sm animate-fadeIn"
-          onClick={() => setIsRsvpModalOpen(false)}
-        >
-          <div
-            className="relative w-full max-w-[400px] rounded-2xl border border-[#dec17c]/50 bg-[#faf7f0] text-[#1a150e] shadow-[0_20px_60px_rgba(0,0,0,0.65)] overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Top accent gradient */}
-            <div className="h-1.5 w-full bg-gradient-to-r from-[#cfa962] via-[#f0d8a8] to-[#9c7225]" />
-
-            {/* Close button */}
-            <button
-              type="button"
-              onClick={() => setIsRsvpModalOpen(false)}
-              aria-label="Close RSVP modal"
-              className="absolute top-3.5 right-3.5 w-8 h-8 rounded-full flex items-center justify-center text-stone-500 hover:text-stone-900 hover:bg-stone-200/60 transition-colors cursor-pointer"
-            >
-              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18" />
-                <line x1="6" y1="6" x2="18" y2="18" />
-              </svg>
-            </button>
-
-            <div className="p-6 max-h-[82dvh] overflow-y-auto">
-              {rsvpSubmitted ? (
-                <div className="flex flex-col items-center text-center py-2">
-                  <div className="w-12 h-12 rounded-full bg-[#9c7225]/15 border border-[#9c7225]/40 flex items-center justify-center mb-3 text-[#9c7225]">
-                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12" />
-                    </svg>
-                  </div>
-                  <h3 className="font-cinzel text-lg font-bold tracking-[0.2em] text-[#0d1613] uppercase">
-                    Thank You, {rsvpSubmitted.name}!
-                  </h3>
-                  <p className="font-cormorant italic text-base text-stone-600 mt-1">
-                    {rsvpSubmitted.attending === 'yes'
-                      ? 'We cannot wait to celebrate our special day with you.'
-                      : 'You will be dearly missed on our special day.'}
-                  </p>
-
-                  <div className="w-full rounded-xl bg-white/80 border border-[#9c7225]/25 p-3.5 mt-4 text-left text-xs space-y-1.5 font-sans text-stone-700">
-                    <div className="flex justify-between">
-                      <span className="text-stone-500">Status</span>
-                      <span className="font-semibold text-[#9c7225]">
-                        {rsvpSubmitted.attending === 'yes' ? 'Joyfully Accepts' : 'Regretfully Declines'}
-                      </span>
-                    </div>
-                    {rsvpSubmitted.attending === 'yes' && (
-                      <>
-                        <div className="flex justify-between">
-                          <span className="text-stone-500">Guests</span>
-                          <span className="font-semibold text-stone-900">{rsvpSubmitted.guests}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-stone-500">Events</span>
-                          <span className="font-semibold text-stone-900">
-                            {[
-                              rsvpSubmitted.events?.church && 'Wedding',
-                              rsvpSubmitted.events?.reception && 'Reception'
-                            ]
-                              .filter(Boolean)
-                              .join(' & ') || 'Confirmed'}
-                          </span>
-                        </div>
-                      </>
-                    )}
-                    {rsvpSubmitted.note && (
-                      <div className="pt-1 border-t border-stone-200/70">
-                        <span className="text-stone-500 block text-[11px]">Wishes</span>
-                        <p className="italic text-stone-700 mt-0.5">"{rsvpSubmitted.note}"</p>
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex gap-2.5 w-full mt-5">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setRsvpName(rsvpSubmitted.name || '');
-                        setRsvpAttending(rsvpSubmitted.attending || 'yes');
-                        setRsvpGuests(rsvpSubmitted.guests || 1);
-                        setRsvpEvents(rsvpSubmitted.events || { church: true, reception: true });
-                        setRsvpNote(rsvpSubmitted.note || '');
-                        setRsvpSubmitted(null);
-                      }}
-                      className="flex-1 py-2.5 rounded-full border border-[#9c7225] text-[#9c7225] font-cinzel text-[11px] font-bold tracking-[0.12em] uppercase hover:bg-[#9c7225]/5 cursor-pointer"
-                    >
-                      Edit Response
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setIsRsvpModalOpen(false)}
-                      className="flex-1 py-2.5 rounded-full bg-[#9c7225] text-white font-cinzel text-[11px] font-bold tracking-[0.12em] uppercase hover:bg-[#855e1a] cursor-pointer"
-                    >
-                      Done
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <form onSubmit={handleRsvpSubmit} className="space-y-4">
-                  <div className="text-center">
-                    <p className="font-cinzel text-[10px] tracking-[0.26em] text-[#9c7225] font-bold uppercase">
-                      Alen &amp; Ammu
-                    </p>
-                    <h3 className="font-cinzel text-xl font-extrabold tracking-[0.18em] text-[#0d1613] uppercase mt-0.5">
-                      Confirm Attendance
-                    </h3>
-                    <p className="font-cormorant italic text-sm text-stone-600 mt-0.5">
-                      Monday, 11 January 2027
-                    </p>
-                  </div>
-
-                  {/* Full Name */}
-                  <div>
-                    <label className="block font-cinzel text-[10px] font-bold tracking-[0.16em] text-stone-700 uppercase mb-1">
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      value={rsvpName}
-                      onChange={(e) => setRsvpName(e.target.value)}
-                      placeholder="Enter your name"
-                      className="w-full px-3.5 py-2.5 rounded-lg border border-stone-300 bg-white text-sm text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-[#9c7225]"
-                    />
-                  </div>
-
-                  {/* Attendance Choice */}
-                  <div>
-                    <label className="block font-cinzel text-[10px] font-bold tracking-[0.16em] text-stone-700 uppercase mb-1.5">
-                      Will you be attending?
-                    </label>
-                    <div className="grid grid-cols-2 gap-2">
-                      <button
-                        type="button"
-                        onClick={() => setRsvpAttending('yes')}
-                        className={`py-2 px-3 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
-                          rsvpAttending === 'yes'
-                            ? 'border-[#9c7225] bg-[#9c7225] text-white shadow-xs'
-                            : 'border-stone-300 bg-white text-stone-700 hover:border-[#9c7225]/60'
-                        }`}
-                      >
-                        Joyfully Accepts
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setRsvpAttending('no')}
-                        className={`py-2 px-3 rounded-lg border text-xs font-semibold transition-all cursor-pointer ${
-                          rsvpAttending === 'no'
-                            ? 'border-stone-700 bg-stone-800 text-white shadow-xs'
-                            : 'border-stone-300 bg-white text-stone-700 hover:border-stone-400'
-                        }`}
-                      >
-                        Regretfully Declines
-                      </button>
-                    </div>
-                  </div>
-
-                  {rsvpAttending === 'yes' && (
-                    <>
-                      {/* Number of Guests */}
-                      <div>
-                        <label className="block font-cinzel text-[10px] font-bold tracking-[0.16em] text-stone-700 uppercase mb-1.5">
-                          Number of Guests
-                        </label>
-                        <div className="flex items-center gap-2">
-                          {[1, 2, 3, 4, 5].map((num) => (
-                            <button
-                              key={num}
-                              type="button"
-                              onClick={() => setRsvpGuests(num)}
-                              className={`flex-1 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer ${
-                                rsvpGuests === num
-                                  ? 'border-[#9c7225] bg-[#9c7225]/15 text-[#9c7225]'
-                                  : 'border-stone-300 bg-white text-stone-700'
-                              }`}
-                            >
-                              {num === 5 ? '5+' : num}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* Events Attending */}
-                      <div>
-                        <label className="block font-cinzel text-[10px] font-bold tracking-[0.16em] text-stone-700 uppercase mb-1.5">
-                          Events Attending
-                        </label>
-                        <div className="grid grid-cols-2 gap-2">
-                          <button
-                            type="button"
-                            onClick={() => setRsvpEvents((prev) => ({ ...prev, church: !prev.church }))}
-                            className={`py-2 px-2.5 rounded-lg border text-[11px] font-medium transition-all cursor-pointer ${
-                              rsvpEvents.church
-                                ? 'border-[#9c7225] bg-[#9c7225]/12 text-[#0d1613]'
-                                : 'border-stone-300 bg-white text-stone-500'
-                            }`}
-                          >
-                            Wedding (2:00 PM)
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setRsvpEvents((prev) => ({ ...prev, reception: !prev.reception }))}
-                            className={`py-2 px-2.5 rounded-lg border text-[11px] font-medium transition-all cursor-pointer ${
-                              rsvpEvents.reception
-                                ? 'border-[#9c7225] bg-[#9c7225]/12 text-[#0d1613]'
-                                : 'border-stone-300 bg-white text-stone-500'
-                            }`}
-                          >
-                            Reception (5:30 PM)
-                          </button>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
-                  {/* Optional Note */}
-                  <div>
-                    <label className="block font-cinzel text-[10px] font-bold tracking-[0.16em] text-stone-700 uppercase mb-1">
-                      Warm Wishes (Optional)
-                    </label>
-                    <textarea
-                      rows={2}
-                      value={rsvpNote}
-                      onChange={(e) => setRsvpNote(e.target.value)}
-                      placeholder="Leave a blessing or note for the couple..."
-                      className="w-full px-3.5 py-2 rounded-lg border border-stone-300 bg-white text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:border-[#9c7225] resize-none"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    className="w-full py-3 rounded-full bg-gradient-to-r from-[#9c7225] to-[#b58732] hover:brightness-105 active:scale-[0.98] text-white font-cinzel text-xs font-bold tracking-[0.18em] uppercase shadow-md transition-all cursor-pointer"
-                  >
-                    Confirm Attendance
-                  </button>
-                </form>
+          {rsvpSubmitted ? (
+            /* Confirmation View After Submitting Inline Form */
+            <div className="w-full max-w-[270px] sm:max-w-[288px] flex flex-col items-center text-center py-2 px-3 rounded-xl bg-black/25 backdrop-blur-xs border border-[#e2c685]/35">
+              <div className="w-8 h-8 rounded-full bg-[#e6c67c]/20 border border-[#e6c67c]/60 flex items-center justify-center mb-1.5 text-[#f4db9c]">
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12" />
+                </svg>
+              </div>
+              <p className="font-playfair italic text-base sm:text-lg text-[#fff8eb] leading-tight">
+                Thank you, {rsvpSubmitted.name}!
+              </p>
+              <p className="font-sans text-[10.5px] sm:text-[11px] text-[#efe3ca]/90 mt-1 leading-snug">
+                Your response for <span className="font-semibold text-[#f4db9c]">{rsvpSubmitted.guests}</span> {Number(rsvpSubmitted.guests) > 1 ? 'guests' : 'guest'} has been received.
+              </p>
+              {rsvpSubmitted.note && (
+                <p className="font-cormorant italic text-[13px] text-[#e6d5b2] mt-1 line-clamp-2">
+                  "{rsvpSubmitted.note}"
+                </p>
               )}
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setRsvpName(rsvpSubmitted.name || '');
+                  setRsvpPhone(rsvpSubmitted.phone || '');
+                  setRsvpGuests(rsvpSubmitted.guests || '');
+                  setRsvpNote(rsvpSubmitted.note || '');
+                  setRsvpSubmitted(null);
+                }}
+                className="mt-2.5 px-5 py-1.5 rounded-full border border-[#e6c67c]/70 text-[#f4db9c] font-playfair text-xs hover:bg-[#e6c67c]/15 transition-colors cursor-pointer"
+              >
+                Edit Response
+              </button>
             </div>
+          ) : (
+            /* Direct Inline Minimal Underline Form */
+            <form
+              onSubmit={handleRsvpSubmit}
+              className="w-full max-w-[268px] sm:max-w-[288px] flex flex-col items-center space-y-1.5 sm:space-y-2"
+            >
+              {/* Field 1: Name */}
+              <div className="w-full flex items-center gap-2.5 border-b border-[#d6b97a]/55 focus-within:border-[#f4db9c] pb-1 pt-0.5 transition-colors">
+                <svg className="w-4 h-4 text-[#e5c989] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                <input
+                  type="text"
+                  value={rsvpName}
+                  onChange={(e) => {
+                    setRsvpName(e.target.value);
+                    if (rsvpError) setRsvpError('');
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  placeholder="Name"
+                  className="w-full bg-transparent text-[13px] sm:text-[14px] text-[#fff8eb] placeholder:font-alex placeholder:text-[17px] placeholder:text-[#efe3ca]/90 outline-none select-text"
+                />
+              </div>
+
+              {/* Field 2: Phone */}
+              <div className="w-full flex items-center gap-2.5 border-b border-[#d6b97a]/55 focus-within:border-[#f4db9c] pb-1 pt-0.5 transition-colors">
+                <svg className="w-4 h-4 text-[#e5c989] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                </svg>
+                <input
+                  type="tel"
+                  value={rsvpPhone}
+                  onChange={(e) => setRsvpPhone(e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
+                  placeholder="Phone"
+                  className="w-full bg-transparent text-[13px] sm:text-[14px] text-[#fff8eb] placeholder:font-alex placeholder:text-[17px] placeholder:text-[#efe3ca]/90 outline-none select-text"
+                />
+              </div>
+
+              {/* Field 3: Number of Guest Dropdown */}
+              <div className="relative w-full flex items-center gap-2.5 border-b border-[#d6b97a]/55 focus-within:border-[#f4db9c] pb-1 pt-0.5 transition-colors">
+                <svg className="w-4 h-4 text-[#e5c989] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <select
+                  value={rsvpGuests}
+                  onChange={(e) => setRsvpGuests(e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
+                  className={`w-full appearance-none bg-transparent outline-none cursor-pointer pr-5 ${
+                    rsvpGuests === ''
+                      ? 'font-alex text-[17px] text-[#efe3ca]/90'
+                      : 'text-[13px] sm:text-[14px] text-[#fff8eb]'
+                  }`}
+                >
+                  <option value="" disabled className="bg-[#21270d] text-[#efe3ca]">
+                    Number of Guest
+                  </option>
+                  <option value="1" className="bg-[#21270d] text-[#fff8eb]">1 Guest</option>
+                  <option value="2" className="bg-[#21270d] text-[#fff8eb]">2 Guests</option>
+                  <option value="3" className="bg-[#21270d] text-[#fff8eb]">3 Guests</option>
+                  <option value="4" className="bg-[#21270d] text-[#fff8eb]">4 Guests</option>
+                  <option value="5+" className="bg-[#21270d] text-[#fff8eb]">5+ Guests</option>
+                </select>
+                <svg
+                  className="w-3.5 h-3.5 text-[#e5c989] absolute right-0.5 pointer-events-none"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
+
+              {/* Field 4: Send your Wishes... */}
+              <div className="w-full flex items-center gap-2.5 border-b border-[#d6b97a]/55 focus-within:border-[#f4db9c] pb-1 pt-0.5 transition-colors">
+                <svg className="w-4 h-4 text-[#e5c989] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                </svg>
+                <input
+                  type="text"
+                  value={rsvpNote}
+                  onChange={(e) => setRsvpNote(e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
+                  placeholder="Send your Wishes..."
+                  className="w-full bg-transparent text-[13px] sm:text-[14px] text-[#fff8eb] placeholder:font-alex placeholder:text-[17px] placeholder:text-[#efe3ca]/90 outline-none select-text"
+                />
+              </div>
+
+              {rsvpError && (
+                <p className="text-[11px] text-[#ffcf99] tracking-wide pt-0.5">
+                  {rsvpError}
+                </p>
+              )}
+
+              {/* Primary CTA Button: Send Response -> */}
+              <button
+                type="submit"
+                onClick={(e) => e.stopPropagation()}
+                className="mt-2.5 sm:mt-3 inline-flex items-center justify-center gap-2 px-8 py-2 rounded-full text-[#1a130a] shadow-[0_0_20px_rgba(236,199,118,0.45),0_4px_12px_rgba(0,0,0,0.45)] hover:brightness-105 active:scale-95 transition-all cursor-pointer group"
+                style={{
+                  background: 'linear-gradient(135deg, #fff5dc 0%, #efd291 50%, #d8ae5e 100%)',
+                }}
+              >
+                <span className="font-playfair text-[13px] sm:text-[14px] font-semibold tracking-wide text-[#1a130a]">
+                  Send Response
+                </span>
+                <svg
+                  className="w-4 h-4 text-[#1a130a] shrink-0 group-hover:translate-x-0.5 transition-transform"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.9"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </button>
+            </form>
+          )}
+
+          {/* Bottom Ornamental Ribbon Bow Divider */}
+          <div className="flex items-center justify-center gap-2.5 w-full max-w-[200px] mt-2.5 sm:mt-3">
+            <div className="h-[1px] w-10 sm:w-12 bg-[#dec17c]/55" />
+            <svg
+              className="w-5 h-4 text-[#e2c685] shrink-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]"
+              viewBox="0 0 28 20"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.25"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              {/* Left loop */}
+              <path d="M14 9 C 10 4, 4 5, 5 9 C 6 12, 11 10, 14 9 Z" />
+              {/* Right loop */}
+              <path d="M14 9 C 18 4, 24 5, 23 9 C 22 12, 17 10, 14 9 Z" />
+              {/* Ribbon tails */}
+              <path d="M14 9 L 10 17" />
+              <path d="M14 9 L 18 17" />
+            </svg>
+            <div className="h-[1px] w-10 sm:w-12 bg-[#dec17c]/55" />
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
