@@ -925,156 +925,203 @@ export default function LandingPage({ preloadedBundle }) {
           />
         </picture>
 
-        {/* Reception Details Overlay: Located strictly in the top half over the open sky */}
-        {/* Compact, cleanly spaced, utilizes upper space above the arch with zero flower overlap */}
+        {/* Reception Details Overlay: Arched champagne-gold layout matching new reference over reception.webp open sky */}
         <div
           ref={receptionDetailsRef}
-          className="absolute top-4 sm:top-5 inset-x-3 sm:inset-x-4 flex flex-col items-center justify-start text-center z-20 transition-all duration-500 ease-out"
+          className="absolute top-2 sm:top-3 inset-x-3 sm:inset-x-4 flex flex-col items-center justify-start text-center z-20 transition-all duration-500 ease-out"
           style={{
             opacity: 0,
             transform: 'translate3d(0, 10px, 0)',
-            pointerEvents: 'none',  
+            pointerEvents: 'none',
           }}
         >
-          {/* Header: WEDDING RECEPTION with ornamental gold divider */}
-          <div className="flex items-center justify-center gap-1.5 mb-0.5">
-            <div className="h-[1px] w-7 sm:w-10 bg-[#9c7225]/75" />
-            <svg className="w-2.5 h-2.5 text-[#9c7225]" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
+          {/* Delicate arched golden outline framing the sky card cleanly */}
+          <div
+            className="absolute -top-0.5 inset-x-3 sm:inset-x-5 h-[285px] sm:h-[310px] rounded-t-[180px] border-t border-l border-r border-[#b59251]/50 pointer-events-none -z-10"
+            style={{
+              maskImage: 'linear-gradient(to bottom, black 0%, black 60%, transparent 98%)',
+              WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 60%, transparent 98%)',
+            }}
+          />
+
+          {/* Top Intertwined Wedding Rings Divider */}
+          <div className="flex items-center justify-center gap-2.5 mt-3 sm:mt-3.5 mb-0.5">
+            <div className="h-[1px] w-9 sm:w-12 bg-[#b59251]/60" />
+            <svg className="w-6 h-3.5 text-[#9c7225] shrink-0" viewBox="0 0 36 20" fill="none" stroke="currentColor" strokeWidth="1.25">
+              <circle cx="14" cy="10" r="5.5" />
+              <circle cx="22" cy="10" r="5.5" />
             </svg>
-            <h3 className="font-cinzel text-[11px] sm:text-xs font-extrabold tracking-[0.26em] text-[#0d1613] uppercase leading-none">
-              Wedding Reception
-            </h3>
-            <svg className="w-2.5 h-2.5 text-[#9c7225]" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 2L14.5 9.5L22 12L14.5 14.5L12 22L9.5 14.5L2 12L9.5 9.5L12 2Z" />
-            </svg>
-            <div className="h-[1px] w-7 sm:w-10 bg-[#9c7225]/75" />
+            <div className="h-[1px] w-9 sm:w-12 bg-[#b59251]/60" />
           </div>
 
-          {/* Date Badge: MONDAY | 11 | JANUARY 2027 + 5:30 PM */}
-          <div className="flex flex-col items-center justify-center w-full">
-            <div className="flex items-center justify-center gap-1.5 sm:gap-2.5 w-full max-w-[310px]">
-              {/* Left Box: MONDAY */}
-              <div className="w-[90px] sm:w-[102px] h-[26px] sm:h-[28px] flex items-center justify-center border-[1.5px] border-[#9c7225] rounded-[2px] bg-white/85 shadow-2xs shrink-0">
-                <span className="font-cinzel text-[9px] sm:text-[10px] font-extrabold text-[#0d1613] tracking-[0.16em] uppercase whitespace-nowrap">
-                  MONDAY
-                </span>
-              </div>
+          {/* WEDDING RECEPTION Title */}
+          <p className="font-cinzel text-[9.5px] sm:text-[10.5px] font-bold tracking-[0.38em] text-[#141412] uppercase leading-none">
+            WEDDING
+          </p>
+          <h3 className="font-cinzel text-[22px] sm:text-[26px] font-medium tracking-[0.14em] leading-none bg-gradient-to-b from-[#6d4e19] via-[#98722d] to-[#b08941] bg-clip-text text-transparent uppercase mt-0.5">
+            RECEPTION
+          </h3>
 
-              {/* Center Anchor: Numeral 11 */}
-              <div className="w-10 sm:w-12 flex items-center justify-center text-center shrink-0">
-                <span className="font-playfair text-4xl sm:text-[42px] font-extrabold text-[#9c7225] leading-none select-none tracking-normal">
+          {/* Horizontal Gold Leaf Twig Divider */}
+          <div className="flex items-center justify-center gap-2 my-1">
+            <div className="h-[1px] w-6 sm:w-8 bg-[#b59251]/60" />
+            <svg className="w-8 h-3 text-[#9c7225] shrink-0" viewBox="0 0 48 16" fill="none" stroke="currentColor" strokeWidth="1.15" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M6 9 Q 24 7, 42 8" />
+              <path d="M14 8 C 12 4, 17 2, 19 6 Z" fill="currentColor" fillOpacity="0.25" />
+              <path d="M18 9 C 17 13, 22 14, 23 10 Z" fill="currentColor" fillOpacity="0.25" />
+              <path d="M25 8 C 24 3, 29 2, 31 6 Z" fill="currentColor" fillOpacity="0.25" />
+              <path d="M29 9 C 28 13, 33 14, 34 9 Z" fill="currentColor" fillOpacity="0.25" />
+              <path d="M35 8 C 36 4, 40 4, 41 7 Z" fill="currentColor" fillOpacity="0.25" />
+            </svg>
+            <div className="h-[1px] w-6 sm:w-8 bg-[#b59251]/60" />
+          </div>
+
+          {/* Champagne Pill Date Capsule + Center Crest Shield "11" + 5:30 PM */}
+          <div className="flex flex-col items-center justify-center w-full my-1">
+            <div className="relative flex items-center justify-between w-full max-w-[266px] sm:max-w-[292px] h-[25px] sm:h-[27px] px-3 sm:px-3.5 rounded-full border border-[#b59251]/80 bg-white/55">
+              {/* Left: MONDAY */}
+              <span className="font-cinzel text-[8.5px] sm:text-[9.5px] font-extrabold text-[#141412] tracking-[0.14em] uppercase whitespace-nowrap">
+                MONDAY
+              </span>
+
+              {/* Center Overlapping Gold Shield for "11" */}
+              <div
+                className="w-11 sm:w-13 h-8 sm:h-9 rounded-xl border border-[#c9a259]/70 shadow-xs flex items-center justify-center shrink-0"
+                style={{
+                  background: 'linear-gradient(155deg, #f6e7c8 0%, #e4c68c 55%, #d0ab63 100%)',
+                }}
+              >
+                <span className="font-playfair text-[24px] sm:text-[28px] font-extrabold text-[#5c3e10] leading-none select-none tracking-tight">
                   11
                 </span>
               </div>
 
-              {/* Right Box: JANUARY 2027 */}
-              <div className="w-[90px] sm:w-[102px] h-[26px] sm:h-[28px] flex items-center justify-center border-[1.5px] border-[#9c7225] rounded-[2px] bg-white/85 shadow-2xs shrink-0">
-                <span className="font-cinzel text-[8.5px] sm:text-[9.5px] font-extrabold text-[#0d1613] tracking-[0.1em] uppercase whitespace-nowrap">
-                  JANUARY 2027
-                </span>
-              </div>
+              {/* Right: JANUARY 2027 */}
+              <span className="font-cinzel text-[8px] sm:text-[9px] font-extrabold text-[#141412] tracking-[0.07em] uppercase whitespace-nowrap">
+                JANUARY 2027
+              </span>
             </div>
 
             {/* Time: 5:30 PM */}
-            <p className="font-cinzel text-[11px] sm:text-xs font-extrabold text-[#0d1613] tracking-[0.22em] mt-0.5 text-center">
+            <p className="font-cinzel text-[11px] sm:text-xs font-extrabold text-[#141412] tracking-[0.22em] mt-1.5 text-center">
               5:30 PM
             </p>
           </div>
 
-          {/* Venue Name & Address (Moved directly up into freed icon space) */}
-          <div className="flex flex-col items-center text-center mt-1.5 mb-1">
-            <h4 className="font-cinzel text-xs sm:text-[13.5px] font-extrabold text-[#0d1613] tracking-[0.14em] uppercase leading-tight">
-              C9 Event Center
-            </h4>
-            <p className="font-cinzel text-[8.5px] sm:text-[9.5px] font-bold text-[#9c7225] tracking-[0.12em] uppercase mt-0.5">
-              By C9 Hospitality
-            </p>
-            <p className="font-cinzel text-[8px] sm:text-[9px] text-stone-700 tracking-[0.08em] mt-0.5 font-medium">
-              Puthuppady, Muvattupuzha, Keralam 686673
-            </p>
+          {/* Subtle Diamond Horizontal Divider */}
+          <div className="flex items-center justify-center gap-2 w-full max-w-[210px] my-1">
+            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#b59251]/60" />
+            <svg className="w-2 h-2 text-[#9c7225]" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4">
+              <polygon points="6,1 11,6 6,11 1,6" />
+            </svg>
+            <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#b59251]/60" />
           </div>
 
-          {/* Route Section & Google Maps Directions Buttons (Compact & Inset away from tree branches) */}
-          <div className="w-full max-w-[330px] flex flex-col items-center my-0.5 pointer-events-auto">
-            {/* Wavy Road Connector between Cathedral & C9 */}
-            <div className="flex items-center justify-between w-full px-1 mb-1">
-              {/* Church Section */}
-              <div className="flex flex-col items-center text-center w-28 sm:w-32 shrink-0">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#9c7225]/12 border border-[#9c7225]/25 flex items-center justify-center mb-0.5">
-                  <svg className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#9c7225]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 2v4M10 4h4" />
-                    <path d="M12 6L4 12v9h16v-9L12 6z" />
-                    <path d="M10 21v-6h4v6" />
-                  </svg>
-                </div>
-                <span className="font-cinzel text-[9px] sm:text-[10px] font-extrabold text-[#0d1613] tracking-wide leading-tight">
-                  St. Thomas Cathedral
+          {/* Venue Details: C9 EVENT CENTER / BY C9 HOSPITALITY / Pin + Address */}
+          <div className="flex flex-col items-center text-center">
+            <h4 className="font-cinzel text-[12.5px] sm:text-[14px] font-extrabold text-[#141412] tracking-[0.14em] uppercase leading-tight">
+              C9 EVENT CENTER
+            </h4>
+            <p className="font-cinzel text-[8.5px] sm:text-[9.5px] font-bold text-[#967028] tracking-[0.14em] uppercase mt-0.5 leading-tight">
+              BY C9 HOSPITALITY
+            </p>
+            <div className="flex items-center justify-center gap-1 mt-0.5">
+              <svg className="w-2.5 h-2.5 text-[#9c7225] shrink-0 fill-current" viewBox="0 0 24 24">
+                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" />
+              </svg>
+              <span className="font-cinzel text-[7px] sm:text-[7.5px] font-semibold text-[#2a2824] tracking-[0.07em] uppercase">
+                PUTHUPPADY, MUVATTUPUZHA, KERALAM 686673
+              </span>
+            </div>
+          </div>
+
+          {/* Two Symmetrical Venue Cards + Vertical Divider + Google Maps Action Pills */}
+          <div className="w-full max-w-[300px] sm:max-w-[322px] flex flex-col items-center mt-2 mb-1 pointer-events-auto">
+            {/* Row 1: Two Venue Info Pills with center vertical hairline */}
+            <div className="flex items-center justify-between gap-2 w-full mb-1.5">
+              {/* Left Card: St. Thomas Cathedral */}
+              <div className="flex-1 rounded-full border border-[#b59251]/40 bg-[#faf7f0]/75 px-2.5 py-1 flex items-center justify-center gap-1.5">
+                <svg className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#9a7228] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2v4M10 4h4" />
+                  <path d="M12 6L4 12v9h16v-9L12 6z" />
+                  <path d="M10 21v-6h4v6" />
+                </svg>
+                <span className="font-cormorant font-bold text-[10px] sm:text-[11px] leading-[1.08] text-[#1a1815] text-left">
+                  St. Thomas
+                  <br />
+                  Cathedral
                 </span>
               </div>
 
-              {/* Dotted Connecting Route */}
-              <div className="flex-1 flex items-center justify-center px-1">
-                <svg className="w-full h-3.5 text-[#9c7225]" viewBox="0 0 80 14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
-                  <path d="M 4 7 Q 22 1, 40 7 T 76 7" strokeDasharray="4 3" />
-                  <circle cx="40" cy="7" r="2.2" fill="currentColor" />
-                </svg>
-              </div>
+              {/* Center Vertical Gold Line */}
+              <div className="w-[1px] h-7 bg-[#b59251]/45 shrink-0" />
 
-              {/* Event Center Section */}
-              <div className="flex flex-col items-center text-center w-28 sm:w-32 shrink-0">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#9c7225]/12 border border-[#9c7225]/25 flex items-center justify-center mb-0.5">
-                  <svg className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#9c7225]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 21h18M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16" />
-                    <path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M10 21v-3h4v3" />
-                  </svg>
-                </div>
-                <span className="font-cinzel text-[9px] sm:text-[10px] font-extrabold text-[#0d1613] tracking-wide leading-tight">
-                  C9 Event Center
+              {/* Right Card: C9 Event Center */}
+              <div className="flex-1 rounded-full border border-[#b59251]/40 bg-[#faf7f0]/75 px-2.5 py-1 flex items-center justify-center gap-1.5">
+                <svg className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#9a7228] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M3 21h18M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16" />
+                  <path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M10 21v-3h4v3" />
+                </svg>
+                <span className="font-cormorant font-bold text-[10px] sm:text-[11px] leading-[1.08] text-[#1a1815] text-left">
+                  C9 Event
+                  <br />
+                  Center
                 </span>
               </div>
             </div>
 
-            {/* Google Maps Action Buttons */}
-            <div className="flex items-center justify-center gap-2 w-full">
-              {/* Button 1: Cathedral Map */}
+            {/* Row 2: Google Maps Action Buttons with Arrow */}
+            <div className="flex items-center justify-between gap-4.5 w-full">
+              {/* Button 1: CATHEDRAL MAP -> */}
               <a
                 href="https://www.google.com/maps/search/?api=1&query=St.+Thomas+Cathedral+Church,+Muvattupuzha"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="flex-1 max-w-[138px] flex items-center justify-center gap-1.5 py-1 sm:py-1.5 px-2 rounded-full border-[1.5px] border-[#9c7225] bg-white/95 hover:bg-white active:scale-95 text-[#0d1613] shadow-xs transition-all cursor-pointer group"
+                className="flex-1 flex items-center justify-center gap-1 py-1 px-2 rounded-full border border-[#8c6725]/85 bg-[#fffcf6] hover:bg-white active:scale-95 text-[#1a1815] shadow-2xs transition-all cursor-pointer group"
               >
-                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-[#9c7225] shrink-0 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+                <svg className="w-2.5 h-2.5 text-[#8c6725] shrink-0 fill-current" viewBox="0 0 24 24">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" />
                 </svg>
-                <span className="font-cinzel text-[8.5px] sm:text-[9.5px] font-bold tracking-[0.1em] uppercase whitespace-nowrap">
-                  Cathedral Map
+                <span className="font-cinzel text-[7.5px] sm:text-[8px] font-bold tracking-[0.06em] uppercase whitespace-nowrap">
+                  CATHEDRAL MAP
                 </span>
+                <svg className="w-2.5 h-2.5 text-[#8c6725] shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="13 6 19 12 13 18" />
+                </svg>
               </a>
 
-              {/* Button 2: Reception Map */}
+              {/* Button 2: RECEPTION MAP -> */}
               <a
                 href="https://www.google.com/maps/search/?api=1&query=C9+Event+Center+By+C9+Hospitality+Puthuppady+Muvattupuzha"
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="flex-1 max-w-[138px] flex items-center justify-center gap-1.5 py-1 sm:py-1.5 px-2 rounded-full bg-[#9c7225] hover:bg-[#855e1a] active:scale-95 text-white shadow-xs transition-all cursor-pointer group"
+                className="flex-1 flex items-center justify-center gap-1 py-1 px-2 rounded-full bg-gradient-to-r from-[#9e7731] to-[#87611f] hover:brightness-105 active:scale-95 text-white shadow-xs transition-all cursor-pointer group"
               >
-                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-white shrink-0 fill-current group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+                <svg className="w-2.5 h-2.5 text-white shrink-0 fill-current" viewBox="0 0 24 24">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" />
                 </svg>
-                <span className="font-cinzel text-[8.5px] sm:text-[9.5px] font-bold tracking-[0.1em] uppercase whitespace-nowrap">
-                  Reception Map
+                <span className="font-cinzel text-[7.5px] sm:text-[8px] font-bold tracking-[0.06em] uppercase whitespace-nowrap">
+                  RECEPTION MAP
                 </span>
+                <svg className="w-2.5 h-2.5 text-white shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="13 6 19 12 13 18" />
+                </svg>
               </a>
             </div>
           </div>
 
-          {/* Blessing presence line in Great Vibes font */}
-          <p className="font-script text-sm sm:text-base text-[#9c7225] text-center mt-1 select-none leading-none">
+          {/* Graceful Calligraphy Presence Line + Minimal Swirl Flourish */}
+          <p className="font-alex text-[15px] sm:text-[17px] text-[#8f6a24] text-center mt-1 select-none leading-none">
             Your presence will make our day more special
           </p>
+          <svg className="w-16 h-2.5 text-[#9c7225]/70 mt-0.5" viewBox="0 0 80 12" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round">
+            <path d="M8 4 Q 26 2, 40 9 Q 54 2, 72 4" />
+            <path d="M36 9 L 40 11 L 44 9" />
+          </svg>
         </div>
 
         {/* RSVP PAGE: Seamlessly blended below Reception so couch+stairs top & centerpiece floral table bottom frame one unified lawn page */}
