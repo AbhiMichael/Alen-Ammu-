@@ -27,6 +27,11 @@
   font-family: 'Great Vibes', cursive;
 }
 
+.font-script-input,
+.font-script-input::placeholder {
+  font-family: 'Great Vibes', cursive;
+}
+
 .font-alex {
   font-family: 'Alex Brush', cursive;
 }

@@ -1312,7 +1312,7 @@ export default function LandingPage({ preloadedBundle }) {
                   }}
                   onClick={(e) => e.stopPropagation()}
                   placeholder="Name"
-                  className="w-full bg-transparent text-[13.5px] sm:text-[14px] leading-relaxed text-[#fff8eb] placeholder:font-alex placeholder:text-[17px] placeholder:tracking-wide placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+                  className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-tight text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
                 />
               </div>
 
@@ -1327,7 +1327,7 @@ export default function LandingPage({ preloadedBundle }) {
                   onChange={(e) => setRsvpPhone(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
                   placeholder="Phone"
-                  className="w-full bg-transparent text-[13.5px] sm:text-[14px] leading-relaxed text-[#fff8eb] placeholder:font-alex placeholder:text-[17px] placeholder:tracking-wide placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+                  className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-tight text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
                 />
               </div>
 
@@ -1343,10 +1343,8 @@ export default function LandingPage({ preloadedBundle }) {
                   value={rsvpGuests}
                   onChange={(e) => setRsvpGuests(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
-                  className={`w-full appearance-none bg-transparent leading-relaxed outline-none cursor-pointer pr-5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${
-                    rsvpGuests === ''
-                      ? 'font-alex text-[17px] tracking-wide text-[#efe3ca]/95'
-                      : 'text-[13.5px] sm:text-[14px] text-[#fff8eb]'
+                  className={`w-full appearance-none bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-tight outline-none cursor-pointer pr-5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${
+                    rsvpGuests === '' ? 'text-[#efe3ca]/95' : 'text-[#fff8eb]'
                   }`}
                 >
                   <option value="" disabled className="bg-[#21270d] text-[#efe3ca]">
@@ -1383,7 +1381,7 @@ export default function LandingPage({ preloadedBundle }) {
                   onChange={(e) => setRsvpNote(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
                   placeholder="Send your Wishes..."
-                  className="w-full bg-transparent text-[13.5px] sm:text-[14px] leading-relaxed text-[#fff8eb] placeholder:font-alex placeholder:text-[17px] placeholder:tracking-wide placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+                  className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-tight text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
                 />
               </div>
 
