@@ -16,6 +16,10 @@ import {
 // Scroll frame 721 to 820: Smooth combined continuation showing Reception + RSVP seamlessly together
 const TOTAL_SCROLL_FRAMES = 820;
 
+// Google Apps Script Web App URL for Sheet ID: 1bTVNuSTGGOsWoX_J9q1eJFiIGxNLfGVEFvzGT3Lkge0
+// Set VITE_RSVP_SHEET_URL in .env or paste the deployed https://script.google.com/macros/s/.../exec URL below
+const RSVP_GOOGLE_SCRIPT_URL = import.meta.env.VITE_RSVP_SHEET_URL || '';
+
 export default function LandingPage({ preloadedBundle }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
@@ -33,6 +37,7 @@ export default function LandingPage({ preloadedBundle }) {
   const [rsvpGuests, setRsvpGuests] = useState('');
   const [rsvpNote, setRsvpNote] = useState('');
   const [rsvpError, setRsvpError] = useState('');
+  const [isSubmittingRsvp, setIsSubmittingRsvp] = useState(false);
   const [rsvpSubmitted, setRsvpSubmitted] = useState(() => {
     try {
       const saved = localStorage.getItem('alen_ammu_rsvp');
@@ -42,9 +47,11 @@ export default function LandingPage({ preloadedBundle }) {
     }
   });
 
-  const handleRsvpSubmit = (e) => {
+  const handleRsvpSubmit = async (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (isSubmittingRsvp) return;
+
     if (!rsvpName.trim()) {
       setRsvpError('Please enter your name');
       return;
@@ -53,25 +60,60 @@ export default function LandingPage({ preloadedBundle }) {
       setRsvpError('Please select your attendance');
       return;
     }
+
     setRsvpError('');
+    setIsSubmittingRsvp(true);
+
+    const attendanceLabel =
+      rsvpAttendance === 'accepted' ? 'Joyfully Accepted' : 'Regretfully Rejected';
+    const guestCount = rsvpAttendance === 'accepted' ? (rsvpGuests || '1') : '0';
+    const guestsLabel =
+      rsvpAttendance === 'accepted'
+        ? (guestCount === '5+' ? '5+ Guests' : `${guestCount} ${guestCount === '1' ? 'Guest' : 'Guests'}`)
+        : '0';
+
     const submission = {
       name: rsvpName.trim(),
       phone: rsvpPhone.trim(),
       attendance: rsvpAttendance,
-      guests: rsvpAttendance === 'accepted' ? (rsvpGuests || '1') : '0',
+      guests: guestCount,
       note: rsvpNote.trim(),
       submittedAt: new Date().toISOString()
     };
-    setRsvpSubmitted(submission);
+
     try {
-      localStorage.setItem('alen_ammu_rsvp', JSON.stringify(submission));
-    } catch { }
-    confetti({
-      particleCount: 75,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#fff7e6', '#f0d8a8', '#cfa962', '#9c7225']
-    });
+      if (RSVP_GOOGLE_SCRIPT_URL) {
+        const formBody = new URLSearchParams({
+          timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' }),
+          name: submission.name,
+          phone: submission.phone,
+          attendance: attendanceLabel,
+          guests: guestsLabel,
+          wishes: submission.note
+        });
+
+        await fetch(RSVP_GOOGLE_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: formBody
+        });
+      }
+
+      setRsvpSubmitted(submission);
+      try {
+        localStorage.setItem('alen_ammu_rsvp', JSON.stringify(submission));
+      } catch { }
+      confetti({
+        particleCount: 75,
+        spread: 70,
+        origin: { y: 0.6 },
+        colors: ['#fff7e6', '#f0d8a8', '#cfa962', '#9c7225']
+      });
+    } catch {
+      setRsvpError('Could not send response. Please check your internet connection.');
+    } finally {
+      setIsSubmittingRsvp(false);
+    }
   };
 
   const bundleRef = useRef(preloadedBundle || null);
@@ -1416,27 +1458,34 @@ export default function LandingPage({ preloadedBundle }) {
               {/* Primary CTA Button: Send Response -> */}
               <button
                 type="submit"
+                disabled={isSubmittingRsvp}
                 onClick={(e) => e.stopPropagation()}
-                className="mt-2.5 sm:mt-3 inline-flex items-center justify-center gap-2 px-8 py-2 rounded-full text-[#1a130a] shadow-[0_0_20px_rgba(236,199,118,0.45),0_4px_12px_rgba(0,0,0,0.4)] hover:brightness-105 active:scale-95 transition-all cursor-pointer group"
+                className={`mt-2.5 sm:mt-3 inline-flex items-center justify-center gap-2 px-8 py-2 rounded-full text-[#1a130a] shadow-[0_0_20px_rgba(236,199,118,0.45),0_4px_12px_rgba(0,0,0,0.4)] transition-all group ${
+                  isSubmittingRsvp
+                    ? 'opacity-75 cursor-wait'
+                    : 'hover:brightness-105 active:scale-95 cursor-pointer'
+                }`}
                 style={{
                   background: 'linear-gradient(135deg, #fff5dc 0%, #efd291 50%, #d8ae5e 100%)',
                 }}
               >
                 <span className="font-playfair text-[13px] sm:text-[14px] font-semibold tracking-wide text-[#1a130a]">
-                  Send Response
+                  {isSubmittingRsvp ? 'Sending...' : 'Send Response'}
                 </span>
-                <svg
-                  className="w-4 h-4 text-[#1a130a] shrink-0 group-hover:translate-x-0.5 transition-transform"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.9"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="12 5 19 12 12 19" />
-                </svg>
+                {!isSubmittingRsvp && (
+                  <svg
+                    className="w-4 h-4 text-[#1a130a] shrink-0 group-hover:translate-x-0.5 transition-transform"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.9"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                )}
               </button>
             </form>
           )}
