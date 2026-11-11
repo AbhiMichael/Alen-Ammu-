@@ -29,6 +29,7 @@ export default function LandingPage({ preloadedBundle }) {
   // Inline RSVP Form State
   const [rsvpName, setRsvpName] = useState('');
   const [rsvpPhone, setRsvpPhone] = useState('');
+  const [rsvpAttendance, setRsvpAttendance] = useState(''); // '' | 'accepted' | 'rejected'
   const [rsvpGuests, setRsvpGuests] = useState('');
   const [rsvpNote, setRsvpNote] = useState('');
   const [rsvpError, setRsvpError] = useState('');
@@ -48,18 +49,23 @@ export default function LandingPage({ preloadedBundle }) {
       setRsvpError('Please enter your name');
       return;
     }
+    if (!rsvpAttendance) {
+      setRsvpError('Please select your attendance');
+      return;
+    }
     setRsvpError('');
     const submission = {
       name: rsvpName.trim(),
       phone: rsvpPhone.trim(),
-      guests: rsvpGuests || '1',
+      attendance: rsvpAttendance,
+      guests: rsvpAttendance === 'accepted' ? (rsvpGuests || '1') : '0',
       note: rsvpNote.trim(),
       submittedAt: new Date().toISOString()
     };
     setRsvpSubmitted(submission);
     try {
       localStorage.setItem('alen_ammu_rsvp', JSON.stringify(submission));
-    } catch {}
+    } catch { }
     confetti({
       particleCount: 75,
       spread: 70,
@@ -1113,7 +1119,7 @@ export default function LandingPage({ preloadedBundle }) {
 
           {/* Graceful Calligraphy Presence Line + Minimal Swirl Flourish */}
           <p className="font-alex text-[15px] sm:text-[17px] text-[#8f6a24] text-center mt-1 select-none leading-none">
-           
+
           </p>
           <svg className="w-16 h-2.5 text-[#9c7225]/70 mt-0.5" viewBox="0 0 80 12" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round">
             <path d="M8 4 Q 26 2, 40 9 Q 54 2, 72 4" />
@@ -1138,10 +1144,10 @@ export default function LandingPage({ preloadedBundle }) {
           />
         </picture>
 
-        {/* RSVP INLINE DESIGN & FORM OVERLAY: Centered across the shaded sunlit lawn right between stairs and floral table */}
+        {/* RSVP INLINE DESIGN & FORM OVERLAY: Shifted slightly higher across the shaded lawn right below stairs */}
         <div
           ref={rsvpDetailsRef}
-          className="absolute left-0 right-0 top-[68%] h-[51%] flex flex-col items-center justify-center text-center z-30 px-4 transition-all duration-300 ease-out"
+          className="absolute left-0 right-0 top-[68%] h-[51%] flex flex-col items-center justify-start pt-2 sm:pt-3 text-center z-30 px-4 transition-all duration-300 ease-out"
           style={{
             opacity: 0,
             transform: 'translate3d(0, 14px, 0)',
@@ -1153,12 +1159,12 @@ export default function LandingPage({ preloadedBundle }) {
             className="absolute inset-0 pointer-events-none -z-10"
             style={{
               background:
-                'radial-gradient(ellipse 76% 62% at 50% 48%, rgba(15, 19, 6, 0.28) 0%, rgba(15, 19, 6, 0.14) 55%, transparent 100%)',
+                'radial-gradient(ellipse 76% 62% at 50% 45%, rgba(15, 19, 6, 0.28) 0%, rgba(15, 19, 6, 0.14) 55%, transparent 100%)',
             }}
           />
 
-          {/* Top Ornamental Wedding Rings Divider + Subtle Floral Spray */}
-          <div className="relative flex items-center justify-center gap-2.5 w-full max-w-[260px] mb-1.5">
+          {/* Top Ornamental Wedding Rings Divider */}
+          <div className="relative flex items-center justify-center gap-2.5 w-full max-w-[260px] mb-1">
             <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/65" />
             <svg
               className="w-6 h-3.5 text-[#e4c785] shrink-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]"
@@ -1171,49 +1177,16 @@ export default function LandingPage({ preloadedBundle }) {
               <circle cx="22" cy="10" r="6" />
             </svg>
             <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/65" />
-
-            {/* Delicate curved floral blossom branch framing the upper-right of the heading */}
-            <svg
-              className="absolute -right-1 top-1 w-14 h-12 pointer-events-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.35)]"
-              viewBox="0 0 70 60"
-              fill="none"
-            >
-              <path d="M8 6 Q 38 14, 48 44" stroke="#d5bc82" strokeWidth="1" strokeLinecap="round" opacity="0.85" />
-              <path d="M22 11 C 26 6, 32 7, 30 13" stroke="#b9bc7f" strokeWidth="0.9" fill="#9ea365" fillOpacity="0.4" />
-              <path d="M36 24 C 42 20, 47 23, 42 29" stroke="#b9bc7f" strokeWidth="0.9" fill="#9ea365" fillOpacity="0.4" />
-              <path d="M44 37 C 50 35, 52 40, 46 43" stroke="#b9bc7f" strokeWidth="0.9" fill="#9ea365" fillOpacity="0.4" />
-              {/* Tiny white blossom 1 */}
-              <g transform="translate(27 12)">
-                <circle cx="0" cy="-3.5" r="2.2" fill="#fffdf7" />
-                <circle cx="3.3" cy="-1" r="2.2" fill="#fffdf7" />
-                <circle cx="2" cy="3" r="2.2" fill="#fffdf7" />
-                <circle cx="-2" cy="3" r="2.2" fill="#fffdf7" />
-                <circle cx="-3.3" cy="-1" r="2.2" fill="#fffdf7" />
-                <circle cx="0" cy="0" r="1.4" fill="#d9a63a" />
-              </g>
-              {/* Tiny white blossom 2 */}
-              <g transform="translate(40 24) scale(0.8)">
-                <circle cx="0" cy="-3.5" r="2.2" fill="#fffdf7" />
-                <circle cx="3.3" cy="-1" r="2.2" fill="#fffdf7" />
-                <circle cx="2" cy="3" r="2.2" fill="#fffdf7" />
-                <circle cx="-2" cy="3" r="2.2" fill="#fffdf7" />
-                <circle cx="-3.3" cy="-1" r="2.2" fill="#fffdf7" />
-                <circle cx="0" cy="0" r="1.4" fill="#d9a63a" />
-              </g>
-            </svg>
           </div>
 
-          {/* Main Heading: Your presence / means so much in Great Vibes */}
-          <h2 className="font-script font-normal text-[23px] sm:text-[25px] text-[#fff9ec] leading-[1.15] tracking-wide drop-shadow-[0_1px_5px_rgba(0,0,0,0.65)] select-none">
-            Your presence
+          {/* Main Title: Will you celebrate with us? in Great Vibes font */}
+          <h2 className="font-script font-normal text-[28px] sm:text-[33px] text-[#fff9ec] tracking-wide leading-[1.15] drop-shadow-[0_1px_5px_rgba(0,0,0,0.7)] select-none">
+            Will you celebrate with us?
           </h2>
-          <h3 className="font-script font-normal text-[27px] sm:text-[30px] text-[#fff9ec] leading-[1.1] mt-0.5 drop-shadow-[0_1px_5px_rgba(0,0,0,0.65)] select-none">
-            means so much
-          </h3>
 
           {/* Graceful Curved Swash + Two White Blossoms */}
           <svg
-            className="w-44 sm:w-52 h-6 sm:h-7 pointer-events-none mt-0.5 mb-1 drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]"
+            className="w-44 sm:w-52 h-6 sm:h-7 pointer-events-none mt-0.5 mb-2.5 sm:mb-3 drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]"
             viewBox="0 0 220 34"
             fill="none"
           >
@@ -1249,11 +1222,6 @@ export default function LandingPage({ preloadedBundle }) {
             </g>
           </svg>
 
-          {/* Subheading Question */}
-          <p className="font-playfair italic text-[13.5px] sm:text-[15.5px] text-[#f9f1df] tracking-wider leading-[1.4] drop-shadow-[0_1px_4px_rgba(0,0,0,0.75)] mb-3.5 sm:mb-4 select-none">
-            Will you celebrate with us?
-          </p>
-
           {rsvpSubmitted ? (
             /* Confirmation View After Submitting Inline Form */
             <div className="w-full max-w-[270px] sm:max-w-[288px] flex flex-col items-center text-center py-3 px-4 rounded-xl bg-black/20 backdrop-blur-xs border border-[#e2c685]/40 space-y-1.5">
@@ -1262,11 +1230,21 @@ export default function LandingPage({ preloadedBundle }) {
                   <polyline points="20 6 9 17 4 12" />
                 </svg>
               </div>
-              <p className="font-playfair italic text-base sm:text-lg text-[#fff8eb] leading-snug">
+              <p className="font-script text-2xl sm:text-[26px] text-[#fff8eb] leading-snug">
                 Thank you, {rsvpSubmitted.name}!
               </p>
               <p className="font-sans text-[11px] sm:text-[11.5px] text-[#efe3ca]/95 leading-relaxed">
-                Your response for <span className="font-semibold text-[#f4db9c]">{rsvpSubmitted.guests}</span> {Number(rsvpSubmitted.guests) > 1 ? 'guests' : 'guest'} has been received.
+                {rsvpSubmitted.attendance === 'rejected' ? (
+                  <>
+                    Marked as <span className="font-semibold text-[#f4db9c]">Regretfully Rejected</span>. You will be dearly missed.
+                  </>
+                ) : (
+                  <>
+                    <span className="font-semibold text-[#f4db9c]">Joyfully Accepted</span> for{' '}
+                    <span className="font-semibold text-[#f4db9c]">{rsvpSubmitted.guests}</span>{' '}
+                    {Number(rsvpSubmitted.guests) > 1 ? 'guests' : 'guest'}.
+                  </>
+                )}
               </p>
               {rsvpSubmitted.note && (
                 <p className="font-cormorant italic text-[13.5px] text-[#e6d5b2] leading-snug line-clamp-2">
@@ -1279,7 +1257,8 @@ export default function LandingPage({ preloadedBundle }) {
                   e.stopPropagation();
                   setRsvpName(rsvpSubmitted.name || '');
                   setRsvpPhone(rsvpSubmitted.phone || '');
-                  setRsvpGuests(rsvpSubmitted.guests || '');
+                  setRsvpAttendance(rsvpSubmitted.attendance || 'accepted');
+                  setRsvpGuests(rsvpSubmitted.guests && rsvpSubmitted.guests !== '0' ? rsvpSubmitted.guests : '');
                   setRsvpNote(rsvpSubmitted.note || '');
                   setRsvpSubmitted(null);
                 }}
@@ -1289,13 +1268,13 @@ export default function LandingPage({ preloadedBundle }) {
               </button>
             </div>
           ) : (
-            /* Direct Inline Minimal Underline Form with generous vertical spacing */
+            /* Direct Inline Minimal Underline Form */
             <form
               onSubmit={handleRsvpSubmit}
-              className="w-full max-w-[272px] sm:max-w-[292px] flex flex-col items-center space-y-3 sm:space-y-3.5"
+              className="w-full max-w-[272px] sm:max-w-[292px] flex flex-col items-center space-y-2.5 sm:space-y-3"
             >
               {/* Field 1: Name */}
-              <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-2 pt-0.5 transition-colors">
+              <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors">
                 <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
                   <circle cx="12" cy="7" r="4" />
@@ -1314,7 +1293,7 @@ export default function LandingPage({ preloadedBundle }) {
               </div>
 
               {/* Field 2: Phone */}
-              <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-2 pt-0.5 transition-colors">
+              <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors">
                 <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
                 </svg>
@@ -1328,30 +1307,36 @@ export default function LandingPage({ preloadedBundle }) {
                 />
               </div>
 
-              {/* Field 3: Number of Guest Dropdown */}
-              <div className="relative w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-2 pt-0.5 transition-colors">
+              {/* Field 3: Attendance Dropdown (Joyfully Accepted / Regretfully Rejected) */}
+              <div className="relative w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors">
                 <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  <path d="M9 11l3 3L22 4" />
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                 </svg>
                 <select
-                  value={rsvpGuests}
-                  onChange={(e) => setRsvpGuests(e.target.value)}
+                  value={rsvpAttendance}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setRsvpAttendance(val);
+                    if (val !== 'accepted') {
+                      setRsvpGuests('');
+                    }
+                    if (rsvpError) setRsvpError('');
+                  }}
                   onClick={(e) => e.stopPropagation()}
                   className={`w-full appearance-none bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-tight outline-none cursor-pointer pr-5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${
-                    rsvpGuests === '' ? 'text-[#efe3ca]/95' : 'text-[#fff8eb]'
+                    rsvpAttendance === '' ? 'text-[#efe3ca]/95' : 'text-[#fff8eb]'
                   }`}
                 >
                   <option value="" disabled className="bg-[#21270d] text-[#efe3ca]">
-                    Number of Guest
+                    Attendance
                   </option>
-                  <option value="1" className="bg-[#21270d] text-[#fff8eb]">1 Guest</option>
-                  <option value="2" className="bg-[#21270d] text-[#fff8eb]">2 Guests</option>
-                  <option value="3" className="bg-[#21270d] text-[#fff8eb]">3 Guests</option>
-                  <option value="4" className="bg-[#21270d] text-[#fff8eb]">4 Guests</option>
-                  <option value="5+" className="bg-[#21270d] text-[#fff8eb]">5+ Guests</option>
+                  <option value="accepted" className="bg-[#21270d] text-[#fff8eb]">
+                    Joyfully Accepted
+                  </option>
+                  <option value="rejected" className="bg-[#21270d] text-[#fff8eb]">
+                    Regretfully Rejected
+                  </option>
                 </select>
                 <svg
                   className="w-3.5 h-3.5 text-[#e5c989] absolute right-0.5 pointer-events-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]"
@@ -1366,8 +1351,48 @@ export default function LandingPage({ preloadedBundle }) {
                 </svg>
               </div>
 
-              {/* Field 4: Send your Wishes... */}
-              <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-2 pt-0.5 transition-colors">
+              {/* Field 4: Number of Guest Dropdown — behaves strictly according to Attendance selection */}
+              {rsvpAttendance === 'accepted' && (
+                <div className="relative w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors animate-fadeIn">
+                  <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                  <select
+                    value={rsvpGuests}
+                    onChange={(e) => setRsvpGuests(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    className={`w-full appearance-none bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-tight outline-none cursor-pointer pr-5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${
+                      rsvpGuests === '' ? 'text-[#efe3ca]/95' : 'text-[#fff8eb]'
+                    }`}
+                  >
+                    <option value="" disabled className="bg-[#21270d] text-[#efe3ca]">
+                      Number of Guest
+                    </option>
+                    <option value="1" className="bg-[#21270d] text-[#fff8eb]">1 Guest</option>
+                    <option value="2" className="bg-[#21270d] text-[#fff8eb]">2 Guests</option>
+                    <option value="3" className="bg-[#21270d] text-[#fff8eb]">3 Guests</option>
+                    <option value="4" className="bg-[#21270d] text-[#fff8eb]">4 Guests</option>
+                    <option value="5+" className="bg-[#21270d] text-[#fff8eb]">5+ Guests</option>
+                  </select>
+                  <svg
+                    className="w-3.5 h-3.5 text-[#e5c989] absolute right-0.5 pointer-events-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="6 9 12 15 18 9" />
+                  </svg>
+                </div>
+              )}
+
+              {/* Field 5: Send your Wishes... */}
+              <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors">
                 <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M12 20h9" />
                   <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
@@ -1392,7 +1417,7 @@ export default function LandingPage({ preloadedBundle }) {
               <button
                 type="submit"
                 onClick={(e) => e.stopPropagation()}
-                className="mt-3 sm:mt-4 inline-flex items-center justify-center gap-2 px-8 py-2 rounded-full text-[#1a130a] shadow-[0_0_20px_rgba(236,199,118,0.45),0_4px_12px_rgba(0,0,0,0.4)] hover:brightness-105 active:scale-95 transition-all cursor-pointer group"
+                className="mt-2.5 sm:mt-3 inline-flex items-center justify-center gap-2 px-8 py-2 rounded-full text-[#1a130a] shadow-[0_0_20px_rgba(236,199,118,0.45),0_4px_12px_rgba(0,0,0,0.4)] hover:brightness-105 active:scale-95 transition-all cursor-pointer group"
                 style={{
                   background: 'linear-gradient(135deg, #fff5dc 0%, #efd291 50%, #d8ae5e 100%)',
                 }}
@@ -1417,7 +1442,7 @@ export default function LandingPage({ preloadedBundle }) {
           )}
 
           {/* Bottom Ornamental Ribbon Bow Divider */}
-          <div className="flex items-center justify-center gap-2.5 w-full max-w-[200px] mt-3 sm:mt-3.5">
+          <div className="flex items-center justify-center gap-2.5 w-full max-w-[200px] mt-2.5 sm:mt-3">
             <div className="h-[1px] w-10 sm:w-12 bg-[#dec17c]/60" />
             <svg
               className="w-5 h-4 text-[#e2c685] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]"
