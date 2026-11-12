@@ -18,7 +18,9 @@ const TOTAL_SCROLL_FRAMES = 820;
 
 // Google Apps Script Web App URL for Sheet ID: 1bTVNuSTGGOsWoX_J9q1eJFiIGxNLfGVEFvzGT3Lkge0
 // Set VITE_RSVP_SHEET_URL in .env or paste the deployed https://script.google.com/macros/s/.../exec URL below
-const RSVP_GOOGLE_SCRIPT_URL = import.meta.env.VITE_RSVP_SHEET_URL || '';
+const RSVP_GOOGLE_SCRIPT_URL =
+  import.meta.env.VITE_RSVP_SHEET_URL ||
+  'https://script.google.com/macros/s/AKfycbzwqCd3Mpee_yLnTeLgFID8yJnmufKuj7QOrj7xaVDGK4IrscuCAdIpSWOmRmFjOECi2g/exec';
 
 export default function LandingPage({ preloadedBundle }) {
   const containerRef = useRef(null);
