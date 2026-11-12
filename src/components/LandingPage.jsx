@@ -1290,7 +1290,7 @@ export default function LandingPage({ preloadedBundle }) {
 
           {rsvpSubmitted ? (
             /* Confirmation View After Submitting Inline Form */
-            <div className="w-full max-w-[270px] sm:max-w-[288px] flex flex-col items-center text-center py-3 px-4 rounded-xl bg-black/20 backdrop-blur-xs border border-[#e2c685]/40 space-y-1.5">
+            <div className="w-full max-w-[270px] sm:max-w-[288px] flex flex-col items-center text-center py-4 px-5 rounded-xl bg-black/20 backdrop-blur-xs border border-[#e2c685]/40 space-y-2.5">
               <div className="w-8 h-8 rounded-full bg-[#e6c67c]/20 border border-[#e6c67c]/60 flex items-center justify-center text-[#f4db9c]">
                 <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12" />
@@ -1299,24 +1299,6 @@ export default function LandingPage({ preloadedBundle }) {
               <p className="font-script text-2xl sm:text-[26px] text-[#fff8eb] leading-snug">
                 Thank you, {rsvpSubmitted.name}!
               </p>
-              <p className="font-sans text-[11px] sm:text-[11.5px] text-[#efe3ca]/95 leading-relaxed">
-                {rsvpSubmitted.attendance === 'rejected' ? (
-                  <>
-                    Marked as <span className="font-semibold text-[#f4db9c]">Regretfully Rejected</span>. You will be dearly missed.
-                  </>
-                ) : (
-                  <>
-                    <span className="font-semibold text-[#f4db9c]">Joyfully Accepted</span> for{' '}
-                    <span className="font-semibold text-[#f4db9c]">{rsvpSubmitted.guests}</span>{' '}
-                    {Number(rsvpSubmitted.guests) > 1 ? 'guests' : 'guest'}.
-                  </>
-                )}
-              </p>
-              {rsvpSubmitted.note && (
-                <p className="font-cormorant italic text-[13.5px] text-[#e6d5b2] leading-snug line-clamp-2">
-                  "{rsvpSubmitted.note}"
-                </p>
-              )}
               <button
                 type="button"
                 onClick={(e) => {
