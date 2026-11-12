@@ -13,11 +13,9 @@ import {
 
 // Scroll frame 1 to 600: Landing (1-400) & Church Venue (401-600)
 // Scroll frame 601 to 720: Smooth sliding-up of the Reception page over the venue
-// Scroll frame 721 to 820: Hold/stay on full Reception page with 100% content visible
-// Scroll frame 821 to 920: Smooth combined continuation showing Reception + RSVP seamlessly together
-// Scroll frame 921 to 990: Comfortable hold/stay on RSVP form before Thank You
-// Scroll frame 991 to 1110: Smooth full-screen Thank You closing page after RSVP
-const TOTAL_SCROLL_FRAMES = 1110;
+// Scroll frame 721 to 820: Smooth combined continuation showing Reception + RSVP seamlessly together
+// Scroll frame 821 to 940: Smooth full-screen Thank You closing page after RSVP
+const TOTAL_SCROLL_FRAMES = 940;
 
 // Google Apps Script Web App URL for Sheet ID: 1bTVNuSTGGOsWoX_J9q1eJFiIGxNLfGVEFvzGT3Lkge0
 // Set VITE_RSVP_SHEET_URL in .env or paste the deployed https://script.google.com/macros/s/.../exec URL below
@@ -264,12 +262,12 @@ export default function LandingPage({ preloadedBundle }) {
       container.style.visibility = 'visible';
       // Reception slide-in progress (frames 600 -> 720): 0 -> 1
       const receptionInProgress = Math.max(0, Math.min(1, (curr - 600) / 120));
-      // Hold full Reception page steady on screen during frames 720 -> 820, then scroll into RSVP (820 -> 920): 0 -> 1
-      const rsvpScrollProgress = curr > 820 ? Math.max(0, Math.min(1, (curr - 820) / 100)) : 0;
-      // Comfortable hold on RSVP (920 -> 990), then slide Thank You final page up (990 -> 1110): 0 -> 1
-      const thankyouProgress = curr > 990 ? Math.max(0, Math.min(1, (curr - 990) / 120)) : 0;
+      // Combined continuation scroll (frames 720 -> 820): 0 -> 1
+      const rsvpScrollProgress = curr > 720 ? Math.max(0, Math.min(1, (curr - 720) / 100)) : 0;
+      // Thank You final page slide-in progress (frames 820 -> 940): 0 -> 1
+      const thankyouProgress = curr > 820 ? Math.max(0, Math.min(1, (curr - 820) / 120)) : 0;
 
-      // 100% (offscreen bottom) -> 0% (Reception full view & hold) -> -51% (Unified Reception + RSVP One-Page composition)
+      // 100% (offscreen bottom) -> 0% (Reception full view) -> -51% (Unified Reception + RSVP One-Page composition)
       const translateY = (1 - receptionInProgress) * 100 - rsvpScrollProgress * 51;
       container.style.transform = `translate3d(0, ${translateY.toFixed(2)}%, 0)`;
 
@@ -283,9 +281,9 @@ export default function LandingPage({ preloadedBundle }) {
         if (backdrop) backdrop.style.opacity = beigeFactor.toFixed(3);
       }
 
-      // Reveal full Reception content as slide completes (receptionInProgress >= 0.85) and keep visible during Reception stay
+      // Only show reception texts when the background is fully loaded (receptionInProgress >= 0.95)
       if (details) {
-        if (receptionInProgress >= 0.85) {
+        if (receptionInProgress >= 0.95) {
           details.style.opacity = '1';
           details.style.transform = 'translate3d(0, 0, 0)';
           details.style.pointerEvents = rsvpScrollProgress > 0.2 ? 'none' : 'auto';
@@ -308,7 +306,7 @@ export default function LandingPage({ preloadedBundle }) {
 
       // Smoothly slide Thank You full-screen image page up after RSVP section
       if (thankyouContainer) {
-        if (curr <= 990) {
+        if (curr <= 820) {
           thankyouContainer.style.transform = 'translate3d(0, 100%, 0)';
           thankyouContainer.style.visibility = 'hidden';
         } else {
@@ -390,26 +388,13 @@ export default function LandingPage({ preloadedBundle }) {
       lastLoopTime = now;
 
       if (Math.abs(touchVelocity) > 0.002) {
-        const prevTarget = targetFrameRef.current;
-        const zoneMax = prevTarget >= 600 ? 0.16 : 0.34;
+        const zoneMax = targetFrameRef.current >= 600 ? 0.16 : 0.34;
         const clampedVel = Math.max(-zoneMax, Math.min(zoneMax, touchVelocity));
-        let nextTarget = Math.max(
+        targetFrameRef.current = Math.max(
           1,
-          Math.min(TOTAL_SCROLL_FRAMES, prevTarget + clampedVel * dtMs)
+          Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + clampedVel * dtMs)
         );
-
-        // Settle flick momentum onto full Reception (720) or full RSVP (920) view cleanly
-        if (clampedVel > 0 && prevTarget < 720 && nextTarget >= 720) {
-          nextTarget = 720;
-          touchVelocity = 0;
-        } else if (clampedVel > 0 && prevTarget < 920 && nextTarget >= 920) {
-          nextTarget = 920;
-          touchVelocity = 0;
-        } else {
-          touchVelocity = clampedVel * Math.exp(-9 * dt);
-        }
-
-        targetFrameRef.current = nextTarget;
+        touchVelocity = clampedVel * Math.exp(-9 * dt);
       } else {
         touchVelocity = 0;
       }
