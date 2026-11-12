@@ -53,7 +53,7 @@ export default function LoadingScreen({
   }, []);
 
   return (
-    <div className="relative w-full h-[100dvh] max-w-[480px] mx-auto overflow-hidden bg-gradient-to-b from-[#f9f7f2] via-[#f3ede2] to-[#e8e0d0] select-none">
+    <div className="relative w-full h-full mx-auto overflow-hidden bg-gradient-to-b from-[#f9f7f2] via-[#f3ede2] to-[#e8e0d0] select-none">
       {/* Background Image: loading.webp with high priority, instant load, and smooth fade-in */}
       <img
         src="/loading.webp"
@@ -72,14 +72,14 @@ export default function LoadingScreen({
       />
 
       {/* Minimal 2D Text directly on the sky (approx. 14% to 35% from top) */}
-      <div className="absolute top-[15%] inset-x-4 flex flex-col items-center justify-center text-center z-10">
+      <div className="absolute top-[max(15%,calc(env(safe-area-inset-top)+2rem))] inset-x-4 flex flex-col items-center justify-center text-center z-10">
         {/* Subtle 2D Subtitle */}
         <p className="font-cinzel tracking-[0.3em] text-[10px] sm:text-[11px] uppercase text-stone-700 font-semibold mb-1">
           Wedding Invitation
         </p>
 
         {/* Minimal Couple Names in Great Vibes font */}
-        <h1 className="font-script text-5xl sm:text-6xl text-stone-900 leading-tight">
+        <h1 className="font-script text-[42px] min-[360px]:text-5xl sm:text-6xl text-stone-900 leading-tight">
           Alen &amp; Ammu
         </h1>
 

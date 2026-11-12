@@ -8,17 +8,44 @@
     --font-pinyon: 'Pinyon Script', cursive;
     --font-cormorant: 'Cormorant Garamond', serif;
     --font-sans: 'Montserrat', sans-serif;
+    --app-height: 100dvh;
+  }
+
+  html,
+  body,
+  #root {
+    width: 100%;
+    height: 100%;
+    height: var(--app-height, 100dvh);
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+    background-color: #181612;
   }
 
   body {
     font-family: var(--font-sans);
-    background-color: #0d0f12;
+    background-color: #181612;
     color: #f3f4f6;
-    margin: 0;
-    padding: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    touch-action: pan-y;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+    touch-action: none;
+  }
+}
+
+/* Preserve proportions cleanly on extra-short phone viewports (e.g. iPhone SE / Safari toolbars) */
+@media (max-height: 670px) {
+  .short-screen-scale {
+    transform: scale(0.9);
+    transform-origin: top center;
+  }
+
+  .short-screen-rsvp-scale {
+    transform: scale(0.89);
+    transform-origin: top center;
   }
 }
 

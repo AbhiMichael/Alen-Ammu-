@@ -90,6 +90,46 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [handleLoadingImageReady]);
 
+  // Sync CSS --app-height for iOS Safari dynamic toolbars & keyboard recovery
+  useEffect(() => {
+    const syncViewportHeight = () => {
+      const activeTag = document.activeElement?.tagName;
+      const isEditingField = activeTag && ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag);
+      const vvHeight = window.visualViewport?.height || window.innerHeight;
+      const fullHeight = Math.max(window.innerHeight, vvHeight);
+
+      // Ignore temporary virtual-keyboard compression while user is typing in RSVP fields
+      if (isEditingField && fullHeight - vvHeight > 140) {
+        return;
+      }
+
+      const nextHeight = Math.round(window.visualViewport?.height || window.innerHeight);
+      if (nextHeight > 0) {
+        document.documentElement.style.setProperty('--app-height', `${nextHeight}px`);
+      }
+    };
+
+    const handleFocusOut = () => {
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        syncViewportHeight();
+      }, 60);
+    };
+
+    syncViewportHeight();
+    window.addEventListener('resize', syncViewportHeight);
+    window.addEventListener('orientationchange', syncViewportHeight);
+    window.visualViewport?.addEventListener('resize', syncViewportHeight);
+    window.addEventListener('focusout', handleFocusOut);
+
+    return () => {
+      window.removeEventListener('resize', syncViewportHeight);
+      window.removeEventListener('orientationchange', syncViewportHeight);
+      window.visualViewport?.removeEventListener('resize', syncViewportHeight);
+      window.removeEventListener('focusout', handleFocusOut);
+    };
+  }, []);
+
   // Start music on first touch/pointerdown/click anywhere on the screen
   useEffect(() => {
     const handleFirstTouch = () => {
@@ -149,13 +189,20 @@ export default function App() {
     }
     setPreloadedBundle(bundle);
     setStage('landing');
-    window.scrollTo({ top: 0, behavior: 'instant' });
+    window.scrollTo(0, 0);
   };
 
   return (
-    <div className="min-h-[100dvh] w-full bg-[#0a0c0e] flex justify-center items-start text-stone-100">
-      {/* Mobile viewport container (max-w-[480px] centered on desktop, 100% on mobile) */}
-      <div className="w-full max-w-[480px] min-h-[100dvh] relative bg-black shadow-[0_0_80px_rgba(0,0,0,0.85)]">
+    <div className="fixed inset-0 w-full h-[var(--app-height,100dvh)] bg-[#181612] overflow-hidden flex justify-center items-center text-stone-100">
+      {/* Subtle atmospheric backdrop on wide desktop/tablet screens instead of harsh black bars */}
+      <div
+        aria-hidden="true"
+        className="hidden sm:block absolute inset-0 bg-cover bg-center blur-3xl scale-110 opacity-30 pointer-events-none"
+        style={{ backgroundImage: "url('/loading.webp')" }}
+      />
+
+      {/* Responsive viewport stage: 100% edge-to-edge on all mobile phones, true 9:16 portrait frame on tablet/desktop */}
+      <div className="w-full sm:w-[clamp(360px,calc(var(--app-height,100dvh)*0.5625),500px)] sm:max-w-[92vw] h-full sm:max-h-[920px] relative bg-[#181612] overflow-hidden shadow-[0_0_80px_rgba(0,0,0,0.75)]">
         {stage === 'loading' ? (
           <LoadingScreen
             onStartExperience={handleStartExperience}
@@ -165,7 +212,7 @@ export default function App() {
             onLoadingImageReady={handleLoadingImageReady}
           />
         ) : (
-          <div className="relative w-full animate-fadeIn">
+          <div className="relative w-full h-full">
             {/* Seamless 600-frame sequence scroll animation (400 landing + blur fade + 200 venue) */}
             <LandingPage
               preloadedBundle={preloadedBundle}
@@ -176,7 +223,7 @@ export default function App() {
               <button
                 onClick={toggleMute}
                 aria-label={isMuted ? 'Unmute background music' : 'Mute background music'}
-                className="absolute bottom-6 right-5 sm:right-6 z-40 w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/45 hover:bg-black/60 active:scale-90 backdrop-blur-md border border-white/25 text-white shadow-[0_4px_16px_rgba(0,0,0,0.4)] transition-all cursor-pointer animate-fadeIn"
+                className="absolute bottom-[max(1.25rem,calc(env(safe-area-inset-bottom)+0.75rem))] right-5 sm:right-6 z-40 w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/45 hover:bg-black/60 active:scale-90 backdrop-blur-md border border-white/25 text-white shadow-[0_4px_16px_rgba(0,0,0,0.4)] transition-all cursor-pointer"
                 title={isMuted ? 'Unmute' : 'Mute'}
               >
                 {isMuted ? (

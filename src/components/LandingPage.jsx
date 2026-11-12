@@ -140,12 +140,24 @@ export default function LandingPage({ preloadedBundle }) {
     const ctx = canvas.getContext('2d', { alpha: false });
     let animFrameId = null;
     let lastDrawn = -1;
+    let lastBlurred = false;
+
+    // Detect Canvas 2D ctx.filter support (older iOS Safari ignores ctx.filter silently)
+    let supportsCtxFilter = false;
+    try {
+      ctx.filter = 'blur(1px)';
+      supportsCtxFilter = ctx.filter === 'blur(1px)';
+      ctx.filter = 'none';
+    } catch {
+      supportsCtxFilter = false;
+    }
 
     // Cover canvas while preserving 9:16 aspect ratio
     const drawCover = (img, blurPx = 0) => {
       if (!img || !img.complete || img.naturalWidth === 0) return;
       const cw = canvas.width;
       const ch = canvas.height;
+      if (cw <= 0 || ch <= 0) return;
       const iw = img.naturalWidth;
       const ih = img.naturalHeight;
 
@@ -165,24 +177,53 @@ export default function LandingPage({ preloadedBundle }) {
         oy = 0;
       }
 
-      // Smooth lens blur transition
+      // Smooth lens blur transition with GPU CSS fallback for iOS Safari
       if (blurPx > 0.5) {
-        // Expand drawing area slightly during heavy blur to eliminate edge-feathering vignetting
-        const margin = Math.ceil(blurPx * 1);
-        ctx.filter = `blur(${blurPx.toFixed(1)}px)`;
-        ctx.drawImage(img, ox - margin, oy - margin, rw + margin * 2, rh + margin * 2);
+        if (supportsCtxFilter) {
+          if (lastBlurred) {
+            canvas.style.filter = 'none';
+            canvas.style.transform = 'none';
+            lastBlurred = false;
+          }
+          const margin = Math.ceil(blurPx * 1);
+          ctx.filter = `blur(${blurPx.toFixed(1)}px)`;
+          ctx.drawImage(img, ox - margin, oy - margin, rw + margin * 2, rh + margin * 2);
+        } else {
+          ctx.filter = 'none';
+          ctx.drawImage(img, ox, oy, rw, rh);
+          canvas.style.filter = `blur(${blurPx.toFixed(1)}px)`;
+          canvas.style.transform = 'scale(1.06)';
+          lastBlurred = true;
+        }
       } else {
         ctx.filter = 'none';
+        if (lastBlurred) {
+          canvas.style.filter = 'none';
+          canvas.style.transform = 'none';
+          lastBlurred = false;
+        }
         ctx.drawImage(img, ox, oy, rw, rh);
       }
       ctx.filter = 'none';
     };
 
     const handleResize = () => {
+      const activeTag = document.activeElement?.tagName;
+      const isEditingField = activeTag && ['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag);
+      const vvHeight = window.visualViewport?.height || window.innerHeight;
+      if (isEditingField && Math.max(window.innerHeight, vvHeight) - vvHeight > 140) {
+        return;
+      }
+
       const rect = canvas.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.round(rect.width * dpr);
-      canvas.height = Math.round(rect.height * dpr);
+      const nextW = Math.round(rect.width * dpr);
+      const nextH = Math.round(rect.height * dpr);
+      if (canvas.width !== nextW || canvas.height !== nextH) {
+        canvas.width = nextW;
+        canvas.height = nextH;
+      }
 
       lastDrawn = -1;
       render(Math.round(currentFrameRef.current));
@@ -337,14 +378,34 @@ export default function LandingPage({ preloadedBundle }) {
       lastDrawn = clamped;
     };
 
-    // 60fps/120fps smooth interpolation loop
-    const loop = () => {
+    // Delta-time normalized 60fps/120fps smooth interpolation & gentle non-skidding momentum
+    let lastLoopTime = performance.now();
+    let touchVelocity = 0; // frames per ms, tightly capped to avoid skidding across pages
+
+    const loop = (now) => {
+      const dtMs = Math.min(50, Math.max(1, now - lastLoopTime));
+      const dt = dtMs / 1000;
+      lastLoopTime = now;
+
+      if (Math.abs(touchVelocity) > 0.002) {
+        const zoneMax = targetFrameRef.current >= 600 ? 0.16 : 0.34;
+        const clampedVel = Math.max(-zoneMax, Math.min(zoneMax, touchVelocity));
+        targetFrameRef.current = Math.max(
+          1,
+          Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + clampedVel * dtMs)
+        );
+        touchVelocity = clampedVel * Math.exp(-9 * dt);
+      } else {
+        touchVelocity = 0;
+      }
+
       const target = targetFrameRef.current;
       const current = currentFrameRef.current;
       const diff = target - current;
 
       if (Math.abs(diff) > 0.05) {
-        currentFrameRef.current += diff * 0.75;
+        const alpha = 1 - Math.exp(-11 * dt);
+        currentFrameRef.current += diff * alpha;
         const toDraw = Math.round(currentFrameRef.current);
         if (toDraw !== lastDrawn) {
           render(toDraw);
@@ -365,47 +426,93 @@ export default function LandingPage({ preloadedBundle }) {
       animFrameId = requestAnimationFrame(loop);
     };
 
-    // Desktop mouse wheel / trackpad scroll
+    // Desktop mouse wheel / trackpad scroll (normalized & capped so trackpad flicks don't rush pages)
     const handleWheel = (e) => {
       e.preventDefault();
-      const delta = e.deltaY * 0.35;
+      touchVelocity = 0;
+      const lineMultiplier = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 300 : 1;
+      const normalizedDelta = e.deltaY * lineMultiplier;
+      const sensitivity = targetFrameRef.current >= 600 ? 0.13 : 0.21;
+      const delta = Math.max(-14, Math.min(14, normalizedDelta * sensitivity));
       targetFrameRef.current = Math.max(1, Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + delta));
     };
 
-    // Mobile touch drag
+    // Mobile touch drag with active-touch tracking & controlled speed (no skidding past pages)
+    let activeTouchId = null;
     let lastTouchY = 0;
-    const handleTouchStart = (e) => {
-      lastTouchY = e.touches[0].clientY;
-    };
-    const handleTouchMove = (e) => {
-      if (e.target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
-      if (e.cancelable) e.preventDefault();
-      const currentY = e.touches[0].clientY;
-      const deltaY = (lastTouchY - currentY) * 0.45;
-      lastTouchY = currentY;
+    let lastTouchTime = 0;
+    let recentFrameRate = 0;
 
-      targetFrameRef.current = Math.max(1, Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + deltaY));
+    const handleTouchStart = (e) => {
+      touchVelocity = 0;
+      recentFrameRate = 0;
+      if (e.touches.length > 0) {
+        const touch = e.touches[0];
+        activeTouchId = touch.identifier;
+        lastTouchY = touch.clientY;
+        lastTouchTime = performance.now();
+      }
+    };
+
+    const handleTouchMove = (e) => {
+      if (e.target && ['INPUT', 'TEXTAREA', 'SELECT', 'OPTION'].includes(e.target.tagName)) return;
+      if (e.cancelable) e.preventDefault();
+
+      const touch =
+        Array.from(e.touches).find((t) => t.identifier === activeTouchId) || e.touches[0];
+      if (!touch) return;
+
+      const now = performance.now();
+      const dtMs = Math.max(4, now - lastTouchTime);
+      const rawPx = Math.max(-42, Math.min(42, lastTouchY - touch.clientY));
+      lastTouchY = touch.clientY;
+      lastTouchTime = now;
+
+      const sensitivity = targetFrameRef.current >= 600 ? 0.17 : 0.26;
+      const deltaFrames = rawPx * sensitivity;
+      targetFrameRef.current = Math.max(1, Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + deltaFrames));
+
+      const instantRate = deltaFrames / dtMs;
+      recentFrameRate = recentFrameRate * 0.55 + instantRate * 0.45;
+    };
+
+    const handleTouchEnd = (e) => {
+      if (e.touches.length === 0) {
+        activeTouchId = null;
+        if (performance.now() - lastTouchTime < 80 && Math.abs(recentFrameRate) > 0.05) {
+          const zoneMax = targetFrameRef.current >= 600 ? 0.16 : 0.34;
+          touchVelocity = Math.max(-zoneMax, Math.min(zoneMax, recentFrameRate * 0.65));
+        } else {
+          touchVelocity = 0;
+        }
+        recentFrameRate = 0;
+      }
     };
 
     // Keyboard navigation
     const handleKeyDown = (e) => {
       if (e.target && ['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) return;
+      touchVelocity = 0;
       if (e.key === 'ArrowDown' || e.key === 'PageDown' || e.key === ' ') {
         e.preventDefault();
-        targetFrameRef.current = Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + 15);
+        targetFrameRef.current = Math.min(TOTAL_SCROLL_FRAMES, targetFrameRef.current + 14);
       } else if (e.key === 'ArrowUp' || e.key === 'PageUp') {
         e.preventDefault();
-        targetFrameRef.current = Math.max(1, targetFrameRef.current - 15);
+        targetFrameRef.current = Math.max(1, targetFrameRef.current - 14);
       }
     };
 
     handleResize();
     window.addEventListener('resize', handleResize);
+    window.addEventListener('orientationchange', handleResize);
+    window.visualViewport?.addEventListener('resize', handleResize);
     window.addEventListener('keydown', handleKeyDown);
 
     container.addEventListener('wheel', handleWheel, { passive: false });
     container.addEventListener('touchstart', handleTouchStart, { passive: true });
     container.addEventListener('touchmove', handleTouchMove, { passive: false });
+    container.addEventListener('touchend', handleTouchEnd, { passive: true });
+    container.addEventListener('touchcancel', handleTouchEnd, { passive: true });
 
     animFrameId = requestAnimationFrame(loop);
     render(1);
@@ -413,10 +520,14 @@ export default function LandingPage({ preloadedBundle }) {
 
     return () => {
       window.removeEventListener('resize', handleResize);
+      window.removeEventListener('orientationchange', handleResize);
+      window.visualViewport?.removeEventListener('resize', handleResize);
       window.removeEventListener('keydown', handleKeyDown);
       container.removeEventListener('wheel', handleWheel);
       container.removeEventListener('touchstart', handleTouchStart);
       container.removeEventListener('touchmove', handleTouchMove);
+      container.removeEventListener('touchend', handleTouchEnd);
+      container.removeEventListener('touchcancel', handleTouchEnd);
       if (animFrameId) cancelAnimationFrame(animFrameId);
     };
   }, []);
@@ -507,7 +618,7 @@ export default function LandingPage({ preloadedBundle }) {
   return (
     <div
       ref={containerRef}
-      className="relative w-full h-[100dvh] max-w-[480px] mx-auto bg-black overflow-hidden select-none touch-none"
+      className="relative w-full h-full mx-auto bg-[#181612] overflow-hidden select-none touch-none"
     >
       {/* Full-bleed HTML5 Canvas for seamless 600-frame scrubbing */}
       <canvas
@@ -518,7 +629,7 @@ export default function LandingPage({ preloadedBundle }) {
       {/* Title logo overlay at top center portion during landing start (visible frame 1 to 100, completely disappears before frame 101) */}
       {isTitleActive && (
         <div
-          className="absolute top-8 sm:top-12 inset-x-0 flex justify-center items-center pointer-events-none z-20 transition-opacity duration-150"
+          className="absolute top-[max(2rem,calc(env(safe-area-inset-top)+0.75rem))] sm:top-12 inset-x-0 flex justify-center items-center pointer-events-none z-20 transition-opacity duration-150"
           style={{
             opacity: titleOpacity,
           }}
@@ -534,7 +645,7 @@ export default function LandingPage({ preloadedBundle }) {
 
       {/* Venue location text overlay at top left (line-by-line fast fade in from frame 250, disappears on frame 400) */}
       {isVenueOverlayActive && (
-        <div className="absolute top-10 sm:top-14 left-7 sm:left-9 max-w-[320px] text-left pointer-events-none z-20">
+        <div className="absolute top-[max(2.5rem,calc(env(safe-area-inset-top)+1rem))] sm:top-14 left-6 min-[360px]:left-7 sm:left-9 right-4 max-w-[320px] text-left pointer-events-none z-20">
           {/* Line 1: "Venue" script with elegant swash */}
           <div
             className="flex items-center gap-1.5 transition-all duration-100 ease-out"
@@ -560,7 +671,7 @@ export default function LandingPage({ preloadedBundle }) {
 
           {/* Line 2: "ST.THOMAS CATHEDRAL" */}
           <h2
-            className="font-cormorant italic font-bold text-xl sm:text-2xl text-[#36441a] tracking-wide leading-none mt-2 select-none drop-shadow-[0_1px_2px_rgba(255,255,255,0.35)] transition-all duration-100 ease-out"
+            className="font-cormorant italic font-bold text-[18px] min-[360px]:text-xl sm:text-2xl text-[#36441a] tracking-wide leading-none mt-2 select-none drop-shadow-[0_1px_2px_rgba(255,255,255,0.35)] transition-all duration-100 ease-out"
             style={{
               opacity: l2Opacity,
               transform: `translateY(${l2Y}px)`,
@@ -571,7 +682,7 @@ export default function LandingPage({ preloadedBundle }) {
 
           {/* Line 3: "CHURCH, MUVATTUPUZHA" */}
           <h2
-            className="font-cormorant italic font-bold text-xl sm:text-2xl text-[#36441a] tracking-wide leading-none mt-1 select-none drop-shadow-[0_1px_2px_rgba(255,255,255,0.35)] transition-all duration-100 ease-out"
+            className="font-cormorant italic font-bold text-[18px] min-[360px]:text-xl sm:text-2xl text-[#36441a] tracking-wide leading-none mt-1 select-none drop-shadow-[0_1px_2px_rgba(255,255,255,0.35)] transition-all duration-100 ease-out"
             style={{
               opacity: l3Opacity,
               transform: `translateY(${l3Y}px)`,
@@ -711,7 +822,7 @@ export default function LandingPage({ preloadedBundle }) {
 
       {/* Aesthetic bottom scroll hint (visible only on early frames) */}
       <div
-        className={`absolute bottom-8 inset-x-0 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-500 z-20 ${frameIndex > 35 ? 'opacity-0' : 'opacity-100'
+        className={`absolute bottom-[max(2rem,calc(env(safe-area-inset-bottom)+1.25rem))] inset-x-0 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-500 z-20 ${frameIndex > 35 ? 'opacity-0' : 'opacity-100'
           }`}
       >
         <p className="font-cormorant italic text-sm sm:text-base tracking-[0.25em] text-stone-200/90 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
@@ -722,7 +833,7 @@ export default function LandingPage({ preloadedBundle }) {
 
       {/* Complete Wedding Invitation Card Overlay during Venue section (reveals line-by-line starting earlier at venue frame 75, disappears on frame 200) */}
       {isVenueCardActive && (
-        <div className="absolute top-6 sm:top-10 inset-x-3 sm:inset-x-6 max-w-[460px] mx-auto flex flex-col items-center justify-start text-center pointer-events-none z-20">
+        <div className="absolute top-[max(1.25rem,env(safe-area-inset-top))] sm:top-10 inset-x-3 sm:inset-x-6 max-w-[460px] mx-auto flex flex-col items-center justify-start text-center pointer-events-none z-20 short-screen-scale">
           {/* Ethereal Seamless White Cloud Aura (Pure continuous gradients with zero rectangular boundaries or backdrop-filter clipping) */}
           <div
             className="absolute -top-10 -inset-x-12 sm:-inset-x-18 h-[590px] pointer-events-none -z-10 transition-opacity duration-200"
@@ -844,7 +955,7 @@ export default function LandingPage({ preloadedBundle }) {
               transform: `translateY(${b3Y}px)`,
             }}
           >
-            <h2 className="font-cinzel text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-[0.2em] text-[#9c7225] leading-none uppercase">
+            <h2 className="font-cinzel text-[21px] min-[360px]:text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-[0.15em] min-[360px]:tracking-[0.2em] text-[#9c7225] leading-none uppercase">
               ALEN REJI
             </h2>
             <p className="font-cormorant text-sm sm:text-[15px] font-bold text-[#0d1613] leading-normal mt-1">
@@ -876,7 +987,7 @@ export default function LandingPage({ preloadedBundle }) {
               transform: `translateY(${b5Y}px)`,
             }}
           >
-            <h2 className="font-cinzel text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-[0.2em] text-[#9c7225] leading-none uppercase">
+            <h2 className="font-cinzel text-[21px] min-[360px]:text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-[0.15em] min-[360px]:tracking-[0.2em] text-[#9c7225] leading-none uppercase">
               AMMU SANJAYAN
             </h2>
             <p className="font-cormorant text-sm sm:text-[15px] font-bold text-[#0d1613] leading-normal mt-1">
@@ -923,24 +1034,24 @@ export default function LandingPage({ preloadedBundle }) {
             }}
           >
             {/* Perfectly Symmetrical 3-Column Layout */}
-            <div className="flex items-center justify-center gap-2 sm:gap-3 w-full max-w-[370px]">
+            <div className="flex items-center justify-center gap-1.5 min-[360px]:gap-2 sm:gap-3 w-full max-w-[370px] px-1">
               {/* Left Box: MONDAY (fixed symmetric width) */}
-              <div className="w-[128px] sm:w-[144px] h-[36px] sm:h-[40px] flex items-center justify-center border-[1.5px] border-[#9c7225] rounded-[2px] bg-white/80 shadow-sm shrink-0">
-                <span className="font-cinzel text-xs sm:text-[13px] font-extrabold text-[#0d1613] tracking-[0.22em] uppercase whitespace-nowrap">
+              <div className="flex-1 max-w-[128px] sm:max-w-[144px] h-[34px] min-[360px]:h-[36px] sm:h-[40px] flex items-center justify-center border-[1.5px] border-[#9c7225] rounded-[2px] bg-white/80 shadow-sm">
+                <span className="font-cinzel text-[10.5px] min-[360px]:text-xs sm:text-[13px] font-extrabold text-[#0d1613] tracking-[0.18em] min-[360px]:tracking-[0.22em] uppercase whitespace-nowrap">
                   MONDAY
                 </span>
               </div>
 
               {/* Center Anchor: Big, bold serif numeral "11" in rich gold */}
-              <div className="w-16 sm:w-20 flex items-center justify-center text-center shrink-0">
-                <span className="font-playfair text-6xl sm:text-7xl font-extrabold text-[#9c7225] leading-none select-none tracking-normal">
+              <div className="w-13 min-[360px]:w-16 sm:w-20 flex items-center justify-center text-center shrink-0">
+                <span className="font-playfair text-5xl min-[360px]:text-6xl sm:text-7xl font-extrabold text-[#9c7225] leading-none select-none tracking-normal">
                   11
                 </span>
               </div>
 
               {/* Right Box: JANUARY 2027 (exact same symmetric width as Left Box) */}
-              <div className="w-[128px] sm:w-[144px] h-[36px] sm:h-[40px] flex items-center justify-center border-[1.5px] border-[#9c7225] rounded-[2px] bg-white/80 shadow-sm shrink-0">
-                <span className="font-cinzel text-[11px] sm:text-[12.5px] font-extrabold text-[#0d1613] tracking-[0.14em] sm:tracking-[0.16em] uppercase whitespace-nowrap">
+              <div className="flex-1 max-w-[128px] sm:max-w-[144px] h-[34px] min-[360px]:h-[36px] sm:h-[40px] flex items-center justify-center border-[1.5px] border-[#9c7225] rounded-[2px] bg-white/80 shadow-sm">
+                <span className="font-cinzel text-[9.5px] min-[360px]:text-[11px] sm:text-[12.5px] font-extrabold text-[#0d1613] tracking-[0.1em] min-[360px]:tracking-[0.14em] sm:tracking-[0.16em] uppercase whitespace-nowrap">
                   JANUARY 2027
                 </span>
               </div>
@@ -971,6 +1082,8 @@ export default function LandingPage({ preloadedBundle }) {
         style={{
           transform: 'translate3d(0, 100%, 0)',
           visibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+          backfaceVisibility: 'hidden',
         }}
       >
         {/* Warm moss-green garden bridge directly behind the seamless lawn transition between Reception and RSVP */}
@@ -997,14 +1110,15 @@ export default function LandingPage({ preloadedBundle }) {
         {/* Reception Details Overlay: Arched champagne-gold layout matching new reference over reception.webp open sky */}
         <div
           ref={receptionDetailsRef}
-          className="absolute top-2 sm:top-3 inset-x-3 sm:inset-x-4 flex flex-col items-center justify-start text-center z-20 transition-all duration-500 ease-out"
+          className="absolute top-[max(0.5rem,env(safe-area-inset-top))] sm:top-3 inset-x-3 sm:inset-x-4 flex flex-col items-center justify-start text-center z-20 transition-all duration-500 ease-out"
           style={{
             opacity: 0,
             transform: 'translate3d(0, 10px, 0)',
             pointerEvents: 'none',
           }}
         >
-          {/* Delicate arched golden outline framing the sky card cleanly */}
+          <div className="relative w-full flex flex-col items-center justify-start short-screen-scale">
+            {/* Delicate arched golden outline framing the sky card cleanly */}
           <div
             className="absolute -top-0.5 inset-x-3 sm:inset-x-5 h-[285px] sm:h-[310px] rounded-t-[180px] border-t border-l border-r border-[#b59251]/50 pointer-events-none -z-10"
             style={{
@@ -1191,6 +1305,7 @@ export default function LandingPage({ preloadedBundle }) {
             <path d="M8 4 Q 26 2, 40 9 Q 54 2, 72 4" />
             <path d="M36 9 L 40 11 L 44 9" />
           </svg>
+          </div>
         </div>
 
         {/* RSVP PAGE: Seamlessly blended below Reception so couch+stairs top & centerpiece floral table bottom frame one unified lawn page */}
@@ -1229,7 +1344,8 @@ export default function LandingPage({ preloadedBundle }) {
             }}
           />
 
-          {/* Top Ornamental Wedding Rings Divider */}
+          <div className="w-full flex flex-col items-center short-screen-rsvp-scale">
+            {/* Top Ornamental Wedding Rings Divider */}
           <div className="relative flex items-center justify-center gap-2.5 w-full max-w-[260px] mb-1">
             <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/65" />
             <svg
@@ -1336,7 +1452,7 @@ export default function LandingPage({ preloadedBundle }) {
                   }}
                   onClick={(e) => e.stopPropagation()}
                   placeholder="Name"
-                  className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-tight text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+                  className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
                 />
               </div>
 
@@ -1351,7 +1467,7 @@ export default function LandingPage({ preloadedBundle }) {
                   onChange={(e) => setRsvpPhone(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
                   placeholder="Phone"
-                  className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-tight text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+                  className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
                 />
               </div>
 
@@ -1372,7 +1488,7 @@ export default function LandingPage({ preloadedBundle }) {
                     if (rsvpError) setRsvpError('');
                   }}
                   onClick={(e) => e.stopPropagation()}
-                  className={`w-full appearance-none bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-tight outline-none cursor-pointer pr-5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${
+                  className={`w-full appearance-none bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] outline-none cursor-pointer pr-5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${
                     rsvpAttendance === '' ? 'text-[#efe3ca]/95' : 'text-[#fff8eb]'
                   }`}
                 >
@@ -1412,7 +1528,7 @@ export default function LandingPage({ preloadedBundle }) {
                     value={rsvpGuests}
                     onChange={(e) => setRsvpGuests(e.target.value)}
                     onClick={(e) => e.stopPropagation()}
-                    className={`w-full appearance-none bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-tight outline-none cursor-pointer pr-5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${
+                    className={`w-full appearance-none bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] outline-none cursor-pointer pr-5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${
                       rsvpGuests === '' ? 'text-[#efe3ca]/95' : 'text-[#fff8eb]'
                     }`}
                   >
@@ -1451,7 +1567,7 @@ export default function LandingPage({ preloadedBundle }) {
                   onChange={(e) => setRsvpNote(e.target.value)}
                   onClick={(e) => e.stopPropagation()}
                   placeholder="Send your Wishes..."
-                  className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-tight text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+                  className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
                 />
               </div>
 
@@ -1518,6 +1634,7 @@ export default function LandingPage({ preloadedBundle }) {
             </svg>
             <div className="h-[1px] w-10 sm:w-12 bg-[#dec17c]/60" />
           </div>
+          </div>
         </div>
       </div>
 
@@ -1528,6 +1645,8 @@ export default function LandingPage({ preloadedBundle }) {
         style={{
           transform: 'translate3d(0, 100%, 0)',
           visibility: 'hidden',
+          WebkitBackfaceVisibility: 'hidden',
+          backfaceVisibility: 'hidden',
         }}
       >
         <img

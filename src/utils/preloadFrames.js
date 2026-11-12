@@ -155,8 +155,8 @@ export const preloadAllImages = (onProgress) => {
       tasks.push({ type: 'venue', index: i });
     }
 
-    // High-performance worker pool
-    const CONCURRENCY = 18;
+    // Controlled worker pool (10 parallel sockets keeps mobile Safari & cellular responsive)
+    const CONCURRENCY = 10;
     let nextTaskIndex = 0;
 
     const startWorker = () => {
