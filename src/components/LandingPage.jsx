@@ -14,7 +14,8 @@ import {
 // Scroll frame 1 to 600: Landing (1-400) & Church Venue (401-600)
 // Scroll frame 601 to 720: Smooth sliding-up of the Reception page over the venue
 // Scroll frame 721 to 820: Smooth combined continuation showing Reception + RSVP seamlessly together
-const TOTAL_SCROLL_FRAMES = 820;
+// Scroll frame 821 to 940: Smooth full-screen Thank You closing page after RSVP
+const TOTAL_SCROLL_FRAMES = 940;
 
 // Google Apps Script Web App URL for Sheet ID: 1bTVNuSTGGOsWoX_J9q1eJFiIGxNLfGVEFvzGT3Lkge0
 // Set VITE_RSVP_SHEET_URL in .env or paste the deployed https://script.google.com/macros/s/.../exec URL below
@@ -29,6 +30,7 @@ export default function LandingPage({ preloadedBundle }) {
   const beigeBackdropRef = useRef(null);
   const receptionDetailsRef = useRef(null);
   const rsvpDetailsRef = useRef(null);
+  const thankyouContainerRef = useRef(null);
   const [frameIndex, setFrameIndex] = useState(1);
   const [isReceptionImgLoaded, setIsReceptionImgLoaded] = useState(false);
 
@@ -192,6 +194,7 @@ export default function LandingPage({ preloadedBundle }) {
       const backdrop = beigeBackdropRef.current;
       const details = receptionDetailsRef.current;
       const rsvpDetails = rsvpDetailsRef.current;
+      const thankyouContainer = thankyouContainerRef.current;
       if (!container) return;
 
       if (curr <= 600) {
@@ -208,6 +211,10 @@ export default function LandingPage({ preloadedBundle }) {
           rsvpDetails.style.transform = 'translate3d(0, 14px, 0)';
           rsvpDetails.style.pointerEvents = 'none';
         }
+        if (thankyouContainer) {
+          thankyouContainer.style.transform = 'translate3d(0, 100%, 0)';
+          thankyouContainer.style.visibility = 'hidden';
+        }
         return;
       }
 
@@ -216,6 +223,8 @@ export default function LandingPage({ preloadedBundle }) {
       const receptionInProgress = Math.max(0, Math.min(1, (curr - 600) / 120));
       // Combined continuation scroll (frames 720 -> 820): 0 -> 1
       const rsvpScrollProgress = curr > 720 ? Math.max(0, Math.min(1, (curr - 720) / 100)) : 0;
+      // Thank You final page slide-in progress (frames 820 -> 940): 0 -> 1
+      const thankyouProgress = curr > 820 ? Math.max(0, Math.min(1, (curr - 820) / 120)) : 0;
 
       // 100% (offscreen bottom) -> 0% (Reception full view) -> -51% (Unified Reception + RSVP One-Page composition)
       const translateY = (1 - receptionInProgress) * 100 - rsvpScrollProgress * 51;
@@ -236,7 +245,7 @@ export default function LandingPage({ preloadedBundle }) {
         if (receptionInProgress >= 0.95) {
           details.style.opacity = '1';
           details.style.transform = 'translate3d(0, 0, 0)';
-          details.style.pointerEvents = 'auto';
+          details.style.pointerEvents = rsvpScrollProgress > 0.2 ? 'none' : 'auto';
         } else {
           details.style.opacity = '0';
           details.style.transform = 'translate3d(0, 10px, 0)';
@@ -250,7 +259,20 @@ export default function LandingPage({ preloadedBundle }) {
         const rsvpRise = (1 - rsvpOpacity) * 14;
         rsvpDetails.style.opacity = rsvpOpacity.toFixed(3);
         rsvpDetails.style.transform = `translate3d(0, ${rsvpRise.toFixed(1)}px, 0)`;
-        rsvpDetails.style.pointerEvents = rsvpOpacity > 0.5 ? 'auto' : 'none';
+        rsvpDetails.style.pointerEvents =
+          rsvpOpacity > 0.5 && thankyouProgress < 0.15 ? 'auto' : 'none';
+      }
+
+      // Smoothly slide Thank You full-screen image page up after RSVP section
+      if (thankyouContainer) {
+        if (curr <= 820) {
+          thankyouContainer.style.transform = 'translate3d(0, 100%, 0)';
+          thankyouContainer.style.visibility = 'hidden';
+        } else {
+          thankyouContainer.style.visibility = 'visible';
+          const tyTranslateY = (1 - thankyouProgress) * 100;
+          thankyouContainer.style.transform = `translate3d(0, ${tyTranslateY.toFixed(2)}%, 0)`;
+        }
       }
     };
 
@@ -1515,6 +1537,23 @@ export default function LandingPage({ preloadedBundle }) {
             <div className="h-[1px] w-10 sm:w-12 bg-[#dec17c]/60" />
           </div>
         </div>
+      </div>
+
+      {/* THANK YOU PAGE: Final full-screen closing page sliding up smoothly after RSVP section (821-940) */}
+      <div
+        ref={thankyouContainerRef}
+        className="absolute inset-0 w-full h-full z-[35] overflow-hidden will-change-transform pointer-events-none"
+        style={{
+          transform: 'translate3d(0, 100%, 0)',
+          visibility: 'hidden',
+        }}
+      >
+        <img
+          src="/thankyou.webp"
+          alt="Thank You - Alen & Ammu"
+          className="w-full h-full object-cover object-center pointer-events-none select-none"
+          draggable={false}
+        />
       </div>
     </div>
   );

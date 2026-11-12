@@ -144,6 +144,10 @@ export const preloadAllImages = (onProgress) => {
     rsvpImg.decoding = 'async';
     rsvpImg.src = '/rsvp.webp';
 
+    const thankyouImg = new Image();
+    thankyouImg.decoding = 'async';
+    thankyouImg.src = '/thankyou.webp';
+
     for (let i = 1; i <= TOTAL_LANDING_FRAMES; i++) {
       tasks.push({ type: 'landing', index: i });
     }
