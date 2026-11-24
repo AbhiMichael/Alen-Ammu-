@@ -822,13 +822,13 @@ export default function LandingPage({ preloadedBundle }) {
 
       {/* Aesthetic top scroll hint at 25% from top (visible only on early frames) */}
       <div
-        className={`absolute top-[25%] inset-x-0 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-500 z-20 ${frameIndex > 35 ? 'opacity-0' : 'opacity-100'
+        className={`absolute top-[24%] inset-x-0 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-500 z-20 ${frameIndex > 35 ? 'opacity-0' : 'opacity-100'
           }`}
       >
-        <p className="font-cormorant italic text-sm sm:text-base tracking-[0.25em] text-stone-200/90 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
+        <p className="font-cormorant italic font-medium text-sm sm:text-base tracking-[0.25em] text-[#36441a] drop-shadow-[0_1px_3px_rgba(255,255,255,0.6)]">
           Scroll down to begin our story
         </p>
-        <div className="w-[1px] h-6 bg-gradient-to-b from-stone-200/80 to-transparent mt-1.5 animate-pulse" />
+        <div className="w-[1px] h-6 bg-gradient-to-b from-[#36441a]/70 to-transparent mt-1.5 animate-pulse" />
       </div>
 
       {/* Complete Wedding Invitation Card Overlay during Venue section (reveals line-by-line starting earlier at venue frame 75, disappears on frame 200) */}
@@ -1119,192 +1119,192 @@ export default function LandingPage({ preloadedBundle }) {
         >
           <div className="relative w-full flex flex-col items-center justify-start short-screen-scale">
             {/* Delicate arched golden outline framing the sky card cleanly */}
-          <div
-            className="absolute -top-0.5 inset-x-3 sm:inset-x-5 h-[285px] sm:h-[310px] rounded-t-[180px] border-t border-l border-r border-[#b59251]/50 pointer-events-none -z-10"
-            style={{
-              maskImage: 'linear-gradient(to bottom, black 0%, black 60%, transparent 98%)',
-              WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 60%, transparent 98%)',
-            }}
-          />
+            <div
+              className="absolute -top-0.5 inset-x-3 sm:inset-x-5 h-[285px] sm:h-[310px] rounded-t-[180px] border-t border-l border-r border-[#b59251]/50 pointer-events-none -z-10"
+              style={{
+                maskImage: 'linear-gradient(to bottom, black 0%, black 60%, transparent 98%)',
+                WebkitMaskImage: 'linear-gradient(to bottom, black 0%, black 60%, transparent 98%)',
+              }}
+            />
 
-          {/* Top Intertwined Wedding Rings Divider */}
-          <div className="flex items-center justify-center gap-2.5 mt-3 sm:mt-3.5 mb-0.5">
-            <div className="h-[1px] w-9 sm:w-12 bg-[#b59251]/60" />
-            <svg className="w-6 h-3.5 text-[#9c7225] shrink-0" viewBox="0 0 36 20" fill="none" stroke="currentColor" strokeWidth="1.25">
-              <circle cx="14" cy="10" r="5.5" />
-              <circle cx="22" cy="10" r="5.5" />
-            </svg>
-            <div className="h-[1px] w-9 sm:w-12 bg-[#b59251]/60" />
-          </div>
-
-          {/* WEDDING RECEPTION Title */}
-          <p className="font-cinzel text-[9.5px] sm:text-[10.5px] font-bold tracking-[0.38em] text-[#141412] uppercase leading-none">
-            WEDDING
-          </p>
-          <h3 className="font-cinzel text-[22px] sm:text-[26px] font-medium tracking-[0.14em] leading-none bg-gradient-to-b from-[#6d4e19] via-[#98722d] to-[#b08941] bg-clip-text text-transparent uppercase mt-0.5">
-            RECEPTION
-          </h3>
-
-          {/* Horizontal Gold Leaf Twig Divider */}
-          <div className="flex items-center justify-center gap-2 my-1">
-            <div className="h-[1px] w-6 sm:w-8 bg-[#b59251]/60" />
-            <svg className="w-8 h-3 text-[#9c7225] shrink-0" viewBox="0 0 48 16" fill="none" stroke="currentColor" strokeWidth="1.15" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M6 9 Q 24 7, 42 8" />
-              <path d="M14 8 C 12 4, 17 2, 19 6 Z" fill="currentColor" fillOpacity="0.25" />
-              <path d="M18 9 C 17 13, 22 14, 23 10 Z" fill="currentColor" fillOpacity="0.25" />
-              <path d="M25 8 C 24 3, 29 2, 31 6 Z" fill="currentColor" fillOpacity="0.25" />
-              <path d="M29 9 C 28 13, 33 14, 34 9 Z" fill="currentColor" fillOpacity="0.25" />
-              <path d="M35 8 C 36 4, 40 4, 41 7 Z" fill="currentColor" fillOpacity="0.25" />
-            </svg>
-            <div className="h-[1px] w-6 sm:w-8 bg-[#b59251]/60" />
-          </div>
-
-          {/* Champagne Pill Date Capsule + Center Crest Shield "11" + 5:30 PM */}
-          <div className="flex flex-col items-center justify-center w-full my-1">
-            <div className="relative flex items-center justify-between w-full max-w-[266px] sm:max-w-[292px] h-[25px] sm:h-[27px] px-3 sm:px-3.5 rounded-full border border-[#b59251]/80 bg-white/55">
-              {/* Left: MONDAY */}
-              <span className="font-cinzel text-[8.5px] sm:text-[9.5px] font-extrabold text-[#141412] tracking-[0.14em] uppercase whitespace-nowrap">
-                MONDAY
-              </span>
-
-              {/* Center Overlapping Gold Shield for "11" */}
-              <div
-                className="w-11 sm:w-13 h-8 sm:h-9 rounded-xl border border-[#c9a259]/70 shadow-xs flex items-center justify-center shrink-0"
-                style={{
-                  background: 'linear-gradient(155deg, #f6e7c8 0%, #e4c68c 55%, #d0ab63 100%)',
-                }}
-              >
-                <span className="font-playfair text-[24px] sm:text-[28px] font-extrabold text-[#5c3e10] leading-none select-none tracking-tight">
-                  11
-                </span>
-              </div>
-
-              {/* Right: JANUARY 2027 */}
-              <span className="font-cinzel text-[8px] sm:text-[9px] font-extrabold text-[#141412] tracking-[0.07em] uppercase whitespace-nowrap">
-                JANUARY 2027
-              </span>
-            </div>
-
-            {/* Time: 5:30 PM */}
-            <p className="font-cinzel text-[11px] sm:text-xs font-extrabold text-[#141412] tracking-[0.22em] mt-1.5 text-center">
-              5:30 PM
-            </p>
-          </div>
-
-          {/* Subtle Diamond Horizontal Divider */}
-          <div className="flex items-center justify-center gap-2 w-full max-w-[210px] my-1">
-            <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#b59251]/60" />
-            <svg className="w-2 h-2 text-[#9c7225]" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4">
-              <polygon points="6,1 11,6 6,11 1,6" />
-            </svg>
-            <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#b59251]/60" />
-          </div>
-
-          {/* Venue Details: C9 EVENT CENTER / BY C9 HOSPITALITY / Pin + Address */}
-          <div className="flex flex-col items-center text-center">
-            <h4 className="font-cinzel text-[12.5px] sm:text-[14px] font-extrabold text-[#141412] tracking-[0.14em] uppercase leading-tight">
-              C9 EVENT CENTER
-            </h4>
-            <p className="font-cinzel text-[8.5px] sm:text-[9.5px] font-bold text-[#967028] tracking-[0.14em] uppercase mt-0.5 leading-tight">
-              BY C9 HOSPITALITY
-            </p>
-            <div className="flex items-center justify-center gap-1 mt-0.5">
-              <svg className="w-2.5 h-2.5 text-[#9c7225] shrink-0 fill-current" viewBox="0 0 24 24">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" />
+            {/* Top Intertwined Wedding Rings Divider */}
+            <div className="flex items-center justify-center gap-2.5 mt-3 sm:mt-3.5 mb-0.5">
+              <div className="h-[1px] w-9 sm:w-12 bg-[#b59251]/60" />
+              <svg className="w-6 h-3.5 text-[#9c7225] shrink-0" viewBox="0 0 36 20" fill="none" stroke="currentColor" strokeWidth="1.25">
+                <circle cx="14" cy="10" r="5.5" />
+                <circle cx="22" cy="10" r="5.5" />
               </svg>
-              <span className="font-cinzel text-[7px] sm:text-[7.5px] font-semibold text-[#2a2824] tracking-[0.07em] uppercase">
-                PUTHUPPADY, MUVATTUPUZHA, KERALAM 686673
-              </span>
+              <div className="h-[1px] w-9 sm:w-12 bg-[#b59251]/60" />
             </div>
-          </div>
 
-          {/* Two Symmetrical Venue Cards + Vertical Divider + Google Maps Action Pills */}
-          <div className="w-full max-w-[300px] sm:max-w-[322px] flex flex-col items-center mt-2 mb-1 pointer-events-auto">
-            {/* Row 1: Two Venue Info Pills with center vertical hairline */}
-            <div className="flex items-center justify-between gap-2 w-full mb-1.5">
-              {/* Left Card: St. Thomas Cathedral */}
-              <div className="flex-1 rounded-full border border-[#b59251]/40 bg-[#faf7f0]/75 px-2.5 py-1 flex items-center justify-center gap-1.5">
-                <svg className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#9a7228] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2v4M10 4h4" />
-                  <path d="M12 6L4 12v9h16v-9L12 6z" />
-                  <path d="M10 21v-6h4v6" />
-                </svg>
-                <span className="font-cormorant font-bold text-[10px] sm:text-[11px] leading-[1.08] text-[#1a1815] text-left">
-                  St. Thomas
-                  <br />
-                  Cathedral
+            {/* WEDDING RECEPTION Title */}
+            <p className="font-cinzel text-[9.5px] sm:text-[10.5px] font-bold tracking-[0.38em] text-[#141412] uppercase leading-none">
+              WEDDING
+            </p>
+            <h3 className="font-cinzel text-[22px] sm:text-[26px] font-medium tracking-[0.14em] leading-none bg-gradient-to-b from-[#6d4e19] via-[#98722d] to-[#b08941] bg-clip-text text-transparent uppercase mt-0.5">
+              RECEPTION
+            </h3>
+
+            {/* Horizontal Gold Leaf Twig Divider */}
+            <div className="flex items-center justify-center gap-2 my-1">
+              <div className="h-[1px] w-6 sm:w-8 bg-[#b59251]/60" />
+              <svg className="w-8 h-3 text-[#9c7225] shrink-0" viewBox="0 0 48 16" fill="none" stroke="currentColor" strokeWidth="1.15" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M6 9 Q 24 7, 42 8" />
+                <path d="M14 8 C 12 4, 17 2, 19 6 Z" fill="currentColor" fillOpacity="0.25" />
+                <path d="M18 9 C 17 13, 22 14, 23 10 Z" fill="currentColor" fillOpacity="0.25" />
+                <path d="M25 8 C 24 3, 29 2, 31 6 Z" fill="currentColor" fillOpacity="0.25" />
+                <path d="M29 9 C 28 13, 33 14, 34 9 Z" fill="currentColor" fillOpacity="0.25" />
+                <path d="M35 8 C 36 4, 40 4, 41 7 Z" fill="currentColor" fillOpacity="0.25" />
+              </svg>
+              <div className="h-[1px] w-6 sm:w-8 bg-[#b59251]/60" />
+            </div>
+
+            {/* Champagne Pill Date Capsule + Center Crest Shield "11" + 5:30 PM */}
+            <div className="flex flex-col items-center justify-center w-full my-1">
+              <div className="relative flex items-center justify-between w-full max-w-[266px] sm:max-w-[292px] h-[25px] sm:h-[27px] px-3 sm:px-3.5 rounded-full border border-[#b59251]/80 bg-white/55">
+                {/* Left: MONDAY */}
+                <span className="font-cinzel text-[8.5px] sm:text-[9.5px] font-extrabold text-[#141412] tracking-[0.14em] uppercase whitespace-nowrap">
+                  MONDAY
+                </span>
+
+                {/* Center Overlapping Gold Shield for "11" */}
+                <div
+                  className="w-11 sm:w-13 h-8 sm:h-9 rounded-xl border border-[#c9a259]/70 shadow-xs flex items-center justify-center shrink-0"
+                  style={{
+                    background: 'linear-gradient(155deg, #f6e7c8 0%, #e4c68c 55%, #d0ab63 100%)',
+                  }}
+                >
+                  <span className="font-playfair text-[24px] sm:text-[28px] font-extrabold text-[#5c3e10] leading-none select-none tracking-tight">
+                    11
+                  </span>
+                </div>
+
+                {/* Right: JANUARY 2027 */}
+                <span className="font-cinzel text-[8px] sm:text-[9px] font-extrabold text-[#141412] tracking-[0.07em] uppercase whitespace-nowrap">
+                  JANUARY 2027
                 </span>
               </div>
 
-              {/* Center Vertical Gold Line */}
-              <div className="w-[1px] h-7 bg-[#b59251]/45 shrink-0" />
+              {/* Time: 5:30 PM */}
+              <p className="font-cinzel text-[11px] sm:text-xs font-extrabold text-[#141412] tracking-[0.22em] mt-1.5 text-center">
+                5:30 PM
+              </p>
+            </div>
 
-              {/* Right Card: C9 Event Center */}
-              <div className="flex-1 rounded-full border border-[#b59251]/40 bg-[#faf7f0]/75 px-2.5 py-1 flex items-center justify-center gap-1.5">
-                <svg className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#9a7228] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M3 21h18M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16" />
-                  <path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M10 21v-3h4v3" />
+            {/* Subtle Diamond Horizontal Divider */}
+            <div className="flex items-center justify-center gap-2 w-full max-w-[210px] my-1">
+              <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-[#b59251]/60" />
+              <svg className="w-2 h-2 text-[#9c7225]" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.4">
+                <polygon points="6,1 11,6 6,11 1,6" />
+              </svg>
+              <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-[#b59251]/60" />
+            </div>
+
+            {/* Venue Details: C9 EVENT CENTER / BY C9 HOSPITALITY / Pin + Address */}
+            <div className="flex flex-col items-center text-center">
+              <h4 className="font-cinzel text-[12.5px] sm:text-[14px] font-extrabold text-[#141412] tracking-[0.14em] uppercase leading-tight">
+                C9 EVENT CENTER
+              </h4>
+              <p className="font-cinzel text-[8.5px] sm:text-[9.5px] font-bold text-[#967028] tracking-[0.14em] uppercase mt-0.5 leading-tight">
+                BY C9 HOSPITALITY
+              </p>
+              <div className="flex items-center justify-center gap-1 mt-0.5">
+                <svg className="w-2.5 h-2.5 text-[#9c7225] shrink-0 fill-current" viewBox="0 0 24 24">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" />
                 </svg>
-                <span className="font-cormorant font-bold text-[10px] sm:text-[11px] leading-[1.08] text-[#1a1815] text-left">
-                  C9 Event
-                  <br />
-                  Center
+                <span className="font-cinzel text-[7px] sm:text-[7.5px] font-semibold text-[#2a2824] tracking-[0.07em] uppercase">
+                  PUTHUPPADY, MUVATTUPUZHA, KERALAM 686673
                 </span>
               </div>
             </div>
 
-            {/* Row 2: Google Maps Action Buttons with Arrow */}
-            <div className="flex items-center justify-between gap-4.5 w-full">
-              {/* Button 1: CATHEDRAL MAP -> */}
-              <a
-                href="https://www.google.com/maps/search/?api=1&query=St.+Thomas+Cathedral+Church,+Muvattupuzha"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex-1 flex items-center justify-center gap-1 py-1 px-2 rounded-full border border-[#8c6725]/85 bg-[#fffcf6] hover:bg-white active:scale-95 text-[#1a1815] shadow-2xs transition-all cursor-pointer group"
-              >
-                <svg className="w-2.5 h-2.5 text-[#8c6725] shrink-0 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" />
-                </svg>
-                <span className="font-cinzel text-[7.5px] sm:text-[8px] font-bold tracking-[0.06em] uppercase whitespace-nowrap">
-                  CATHEDRAL MAP
-                </span>
-                <svg className="w-2.5 h-2.5 text-[#8c6725] shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="13 6 19 12 13 18" />
-                </svg>
-              </a>
+            {/* Two Symmetrical Venue Cards + Vertical Divider + Google Maps Action Pills */}
+            <div className="w-full max-w-[300px] sm:max-w-[322px] flex flex-col items-center mt-2 mb-1 pointer-events-auto">
+              {/* Row 1: Two Venue Info Pills with center vertical hairline */}
+              <div className="flex items-center justify-between gap-2 w-full mb-1.5">
+                {/* Left Card: St. Thomas Cathedral */}
+                <div className="flex-1 rounded-full border border-[#b59251]/40 bg-[#faf7f0]/75 px-2.5 py-1 flex items-center justify-center gap-1.5">
+                  <svg className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#9a7228] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 2v4M10 4h4" />
+                    <path d="M12 6L4 12v9h16v-9L12 6z" />
+                    <path d="M10 21v-6h4v6" />
+                  </svg>
+                  <span className="font-cormorant font-bold text-[10px] sm:text-[11px] leading-[1.08] text-[#1a1815] text-left">
+                    St. Thomas
+                    <br />
+                    Cathedral
+                  </span>
+                </div>
 
-              {/* Button 2: RECEPTION MAP -> */}
-              <a
-                href="https://www.google.com/maps/search/?api=1&query=C9+Event+Center+By+C9+Hospitality+Puthuppady+Muvattupuzha"
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={(e) => e.stopPropagation()}
-                className="flex-1 flex items-center justify-center gap-1 py-1 px-2 rounded-full bg-gradient-to-r from-[#9e7731] to-[#87611f] hover:brightness-105 active:scale-95 text-white shadow-xs transition-all cursor-pointer group"
-              >
-                <svg className="w-2.5 h-2.5 text-white shrink-0 fill-current" viewBox="0 0 24 24">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" />
-                </svg>
-                <span className="font-cinzel text-[7.5px] sm:text-[8px] font-bold tracking-[0.06em] uppercase whitespace-nowrap">
-                  RECEPTION MAP
-                </span>
-                <svg className="w-2.5 h-2.5 text-white shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12" />
-                  <polyline points="13 6 19 12 13 18" />
-                </svg>
-              </a>
+                {/* Center Vertical Gold Line */}
+                <div className="w-[1px] h-7 bg-[#b59251]/45 shrink-0" />
+
+                {/* Right Card: C9 Event Center */}
+                <div className="flex-1 rounded-full border border-[#b59251]/40 bg-[#faf7f0]/75 px-2.5 py-1 flex items-center justify-center gap-1.5">
+                  <svg className="w-4 h-4 sm:w-4.5 sm:h-4.5 text-[#9a7228] shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 21h18M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16" />
+                    <path d="M9 7h1M14 7h1M9 11h1M14 11h1M9 15h1M14 15h1M10 21v-3h4v3" />
+                  </svg>
+                  <span className="font-cormorant font-bold text-[10px] sm:text-[11px] leading-[1.08] text-[#1a1815] text-left">
+                    C9 Event
+                    <br />
+                    Center
+                  </span>
+                </div>
+              </div>
+
+              {/* Row 2: Google Maps Action Buttons with Arrow */}
+              <div className="flex items-center justify-between gap-4.5 w-full">
+                {/* Button 1: CATHEDRAL MAP -> */}
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=St.+Thomas+Cathedral+Church,+Muvattupuzha"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex-1 flex items-center justify-center gap-1 py-1 px-2 rounded-full border border-[#8c6725]/85 bg-[#fffcf6] hover:bg-white active:scale-95 text-[#1a1815] shadow-2xs transition-all cursor-pointer group"
+                >
+                  <svg className="w-2.5 h-2.5 text-[#8c6725] shrink-0 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" />
+                  </svg>
+                  <span className="font-cinzel text-[7.5px] sm:text-[8px] font-bold tracking-[0.06em] uppercase whitespace-nowrap">
+                    CATHEDRAL MAP
+                  </span>
+                  <svg className="w-2.5 h-2.5 text-[#8c6725] shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="13 6 19 12 13 18" />
+                  </svg>
+                </a>
+
+                {/* Button 2: RECEPTION MAP -> */}
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=C9+Event+Center+By+C9+Hospitality+Puthuppady+Muvattupuzha"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex-1 flex items-center justify-center gap-1 py-1 px-2 rounded-full bg-gradient-to-r from-[#9e7731] to-[#87611f] hover:brightness-105 active:scale-95 text-white shadow-xs transition-all cursor-pointer group"
+                >
+                  <svg className="w-2.5 h-2.5 text-white shrink-0 fill-current" viewBox="0 0 24 24">
+                    <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z" />
+                  </svg>
+                  <span className="font-cinzel text-[7.5px] sm:text-[8px] font-bold tracking-[0.06em] uppercase whitespace-nowrap">
+                    RECEPTION MAP
+                  </span>
+                  <svg className="w-2.5 h-2.5 text-white shrink-0 group-hover:translate-x-0.5 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="13 6 19 12 13 18" />
+                  </svg>
+                </a>
+              </div>
             </div>
-          </div>
 
-          {/* Graceful Calligraphy Presence Line + Minimal Swirl Flourish */}
-          <p className="font-alex text-[15px] sm:text-[17px] text-[#8f6a24] text-center mt-1 select-none leading-none">
+            {/* Graceful Calligraphy Presence Line + Minimal Swirl Flourish */}
+            <p className="font-alex text-[15px] sm:text-[17px] text-[#8f6a24] text-center mt-1 select-none leading-none">
 
-          </p>
-          <svg className="w-16 h-2.5 text-[#9c7225]/70 mt-0.5" viewBox="0 0 80 12" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round">
-            <path d="M8 4 Q 26 2, 40 9 Q 54 2, 72 4" />
-            <path d="M36 9 L 40 11 L 44 9" />
-          </svg>
+            </p>
+            <svg className="w-16 h-2.5 text-[#9c7225]/70 mt-0.5" viewBox="0 0 80 12" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round">
+              <path d="M8 4 Q 26 2, 40 9 Q 54 2, 72 4" />
+              <path d="M36 9 L 40 11 L 44 9" />
+            </svg>
           </div>
         </div>
 
@@ -1346,200 +1346,160 @@ export default function LandingPage({ preloadedBundle }) {
 
           <div className="w-full flex flex-col items-center short-screen-rsvp-scale">
             {/* Top Ornamental Wedding Rings Divider */}
-          <div className="relative flex items-center justify-center gap-2.5 w-full max-w-[260px] mb-1">
-            <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/65" />
-            <svg
-              className="w-6 h-3.5 text-[#e4c785] shrink-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]"
-              viewBox="0 0 36 20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.35"
-            >
-              <circle cx="14" cy="10" r="6" />
-              <circle cx="22" cy="10" r="6" />
-            </svg>
-            <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/65" />
-          </div>
-
-          {/* Main Title: Will you celebrate with us? in Great Vibes font */}
-          <h2 className="font-script font-normal text-[28px] sm:text-[33px] text-[#fff9ec] tracking-wide leading-[1.15] drop-shadow-[0_1px_5px_rgba(0,0,0,0.7)] select-none">
-            Will you celebrate with us?
-          </h2>
-
-          {/* Graceful Curved Swash + Two White Blossoms */}
-          <svg
-            className="w-44 sm:w-52 h-6 sm:h-7 pointer-events-none mt-0.5 mb-2.5 sm:mb-3 drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]"
-            viewBox="0 0 220 34"
-            fill="none"
-          >
-            {/* Flowing cream calligraphy swash */}
-            <path
-              d="M12 21 C 52 8, 96 9, 148 22 C 166 26, 182 24, 196 17"
-              stroke="#fff7e6"
-              strokeWidth="1.6"
-              strokeLinecap="round"
-              opacity="0.92"
-            />
-            {/* Delicate leaves around right end */}
-            <path d="M180 18 C 175 11, 182 6, 187 12 Z" fill="#909b54" opacity="0.85" />
-            <path d="M196 16 C 201 10, 208 11, 204 17 Z" fill="#909b54" opacity="0.85" />
-            <path d="M192 22 C 198 27, 205 25, 201 19 Z" fill="#7d8945" opacity="0.85" />
-            {/* Main white 5-petal blossom */}
-            <g transform="translate(186 19)">
-              <circle cx="0" cy="-4.5" r="3" fill="#fffdf8" />
-              <circle cx="4.3" cy="-1.4" r="3" fill="#fffdf8" />
-              <circle cx="2.7" cy="3.6" r="3" fill="#fffdf8" />
-              <circle cx="-2.7" cy="3.6" r="3" fill="#fffdf8" />
-              <circle cx="-4.3" cy="-1.4" r="3" fill="#fffdf8" />
-              <circle cx="0" cy="0" r="1.8" fill="#d9a538" />
-            </g>
-            {/* Smaller companion white blossom */}
-            <g transform="translate(198 13) scale(0.72)">
-              <circle cx="0" cy="-4.5" r="3" fill="#fffdf8" />
-              <circle cx="4.3" cy="-1.4" r="3" fill="#fffdf8" />
-              <circle cx="2.7" cy="3.6" r="3" fill="#fffdf8" />
-              <circle cx="-2.7" cy="3.6" r="3" fill="#fffdf8" />
-              <circle cx="-4.3" cy="-1.4" r="3" fill="#fffdf8" />
-              <circle cx="0" cy="0" r="1.8" fill="#d9a538" />
-            </g>
-          </svg>
-
-          {rsvpSubmitted ? (
-            /* Confirmation View After Submitting Inline Form */
-            <div className="w-full max-w-[270px] sm:max-w-[288px] flex flex-col items-center text-center py-4 px-5 rounded-xl bg-black/20 backdrop-blur-xs border border-[#e2c685]/40 space-y-2.5">
-              <div className="w-8 h-8 rounded-full bg-[#e6c67c]/20 border border-[#e6c67c]/60 flex items-center justify-center text-[#f4db9c]">
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              </div>
-              <p className="font-script text-2xl sm:text-[26px] text-[#fff8eb] leading-snug">
-                Thank you, {rsvpSubmitted.name}!
-              </p>
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setRsvpName(rsvpSubmitted.name || '');
-                  setRsvpPhone(rsvpSubmitted.phone || '');
-                  setRsvpAttendance(rsvpSubmitted.attendance || 'accepted');
-                  setRsvpGuests(rsvpSubmitted.guests && rsvpSubmitted.guests !== '0' ? rsvpSubmitted.guests : '');
-                  setRsvpNote(rsvpSubmitted.note || '');
-                  setRsvpSubmitted(null);
-                }}
-                className="mt-2 px-5 py-1.5 rounded-full border border-[#e6c67c]/70 text-[#f4db9c] font-playfair text-xs hover:bg-[#e6c67c]/15 transition-colors cursor-pointer"
+            <div className="relative flex items-center justify-center gap-2.5 w-full max-w-[260px] mb-1">
+              <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/65" />
+              <svg
+                className="w-6 h-3.5 text-[#e4c785] shrink-0 drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]"
+                viewBox="0 0 36 20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.35"
               >
-                Edit Response
-              </button>
+                <circle cx="14" cy="10" r="6" />
+                <circle cx="22" cy="10" r="6" />
+              </svg>
+              <div className="h-[1px] w-12 sm:w-14 bg-[#e2c685]/65" />
             </div>
-          ) : (
-            /* Direct Inline Minimal Underline Form */
-            <form
-              onSubmit={handleRsvpSubmit}
-              className="w-full max-w-[272px] sm:max-w-[292px] flex flex-col items-center space-y-2.5 sm:space-y-3"
+
+            {/* Main Title: Will you celebrate with us? in Great Vibes font */}
+            <h2 className="font-script font-normal text-[28px] sm:text-[33px] text-[#fff9ec] tracking-wide leading-[1.15] drop-shadow-[0_1px_5px_rgba(0,0,0,0.7)] select-none">
+              Will you celebrate with us?
+            </h2>
+
+            {/* Graceful Curved Swash + Two White Blossoms */}
+            <svg
+              className="w-44 sm:w-52 h-6 sm:h-7 pointer-events-none mt-0.5 mb-2.5 sm:mb-3 drop-shadow-[0_1px_3px_rgba(0,0,0,0.45)]"
+              viewBox="0 0 220 34"
+              fill="none"
             >
-              {/* Field 1: Name */}
-              <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors">
-                <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-                <input
-                  type="text"
-                  value={rsvpName}
-                  onChange={(e) => {
-                    setRsvpName(e.target.value);
-                    if (rsvpError) setRsvpError('');
+              {/* Flowing cream calligraphy swash */}
+              <path
+                d="M12 21 C 52 8, 96 9, 148 22 C 166 26, 182 24, 196 17"
+                stroke="#fff7e6"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                opacity="0.92"
+              />
+              {/* Delicate leaves around right end */}
+              <path d="M180 18 C 175 11, 182 6, 187 12 Z" fill="#909b54" opacity="0.85" />
+              <path d="M196 16 C 201 10, 208 11, 204 17 Z" fill="#909b54" opacity="0.85" />
+              <path d="M192 22 C 198 27, 205 25, 201 19 Z" fill="#7d8945" opacity="0.85" />
+              {/* Main white 5-petal blossom */}
+              <g transform="translate(186 19)">
+                <circle cx="0" cy="-4.5" r="3" fill="#fffdf8" />
+                <circle cx="4.3" cy="-1.4" r="3" fill="#fffdf8" />
+                <circle cx="2.7" cy="3.6" r="3" fill="#fffdf8" />
+                <circle cx="-2.7" cy="3.6" r="3" fill="#fffdf8" />
+                <circle cx="-4.3" cy="-1.4" r="3" fill="#fffdf8" />
+                <circle cx="0" cy="0" r="1.8" fill="#d9a538" />
+              </g>
+              {/* Smaller companion white blossom */}
+              <g transform="translate(198 13) scale(0.72)">
+                <circle cx="0" cy="-4.5" r="3" fill="#fffdf8" />
+                <circle cx="4.3" cy="-1.4" r="3" fill="#fffdf8" />
+                <circle cx="2.7" cy="3.6" r="3" fill="#fffdf8" />
+                <circle cx="-2.7" cy="3.6" r="3" fill="#fffdf8" />
+                <circle cx="-4.3" cy="-1.4" r="3" fill="#fffdf8" />
+                <circle cx="0" cy="0" r="1.8" fill="#d9a538" />
+              </g>
+            </svg>
+
+            {rsvpSubmitted ? (
+              /* Confirmation View After Submitting Inline Form */
+              <div className="w-full max-w-[270px] sm:max-w-[288px] flex flex-col items-center text-center py-4 px-5 rounded-xl bg-black/20 backdrop-blur-xs border border-[#e2c685]/40 space-y-2.5">
+                <div className="w-8 h-8 rounded-full bg-[#e6c67c]/20 border border-[#e6c67c]/60 flex items-center justify-center text-[#f4db9c]">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                </div>
+                <p className="font-script text-2xl sm:text-[26px] text-[#fff8eb] leading-snug">
+                  Thank you, {rsvpSubmitted.name}!
+                </p>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setRsvpName(rsvpSubmitted.name || '');
+                    setRsvpPhone(rsvpSubmitted.phone || '');
+                    setRsvpAttendance(rsvpSubmitted.attendance || 'accepted');
+                    setRsvpGuests(rsvpSubmitted.guests && rsvpSubmitted.guests !== '0' ? rsvpSubmitted.guests : '');
+                    setRsvpNote(rsvpSubmitted.note || '');
+                    setRsvpSubmitted(null);
                   }}
-                  onClick={(e) => e.stopPropagation()}
-                  placeholder="Name"
-                  className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
-                />
-              </div>
-
-              {/* Field 2: Phone */}
-              <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors">
-                <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
-                </svg>
-                <input
-                  type="tel"
-                  value={rsvpPhone}
-                  onChange={(e) => setRsvpPhone(e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                  placeholder="Phone"
-                  className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
-                />
-              </div>
-
-              {/* Field 3: Attendance Dropdown (Joyfully Accepted / Regretfully Rejected) */}
-              <div className="relative w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors">
-                <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M9 11l3 3L22 4" />
-                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-                </svg>
-                <select
-                  value={rsvpAttendance}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setRsvpAttendance(val);
-                    if (val !== 'accepted') {
-                      setRsvpGuests('');
-                    }
-                    if (rsvpError) setRsvpError('');
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                  className={`w-full appearance-none bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] outline-none cursor-pointer pr-5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${
-                    rsvpAttendance === '' ? 'text-[#efe3ca]/95' : 'text-[#fff8eb]'
-                  }`}
+                  className="mt-2 px-5 py-1.5 rounded-full border border-[#e6c67c]/70 text-[#f4db9c] font-playfair text-xs hover:bg-[#e6c67c]/15 transition-colors cursor-pointer"
                 >
-                  <option value="" disabled className="bg-[#21270d] text-[#efe3ca]">
-                    Attendance
-                  </option>
-                  <option value="accepted" className="bg-[#21270d] text-[#fff8eb]">
-                    Joyfully Accepted
-                  </option>
-                  <option value="rejected" className="bg-[#21270d] text-[#fff8eb]">
-                    Regretfully Rejected
-                  </option>
-                </select>
-                <svg
-                  className="w-3.5 h-3.5 text-[#e5c989] absolute right-0.5 pointer-events-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.8"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="6 9 12 15 18 9" />
-                </svg>
+                  Edit Response
+                </button>
               </div>
-
-              {/* Field 4: Number of Guest Dropdown — behaves strictly according to Attendance selection */}
-              {rsvpAttendance === 'accepted' && (
-                <div className="relative w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors animate-fadeIn">
+            ) : (
+              /* Direct Inline Minimal Underline Form */
+              <form
+                onSubmit={handleRsvpSubmit}
+                className="w-full max-w-[272px] sm:max-w-[292px] flex flex-col items-center space-y-2.5 sm:space-y-3"
+              >
+                {/* Field 1: Name */}
+                <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors">
                   <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                    <circle cx="9" cy="7" r="4" />
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                  <input
+                    type="text"
+                    value={rsvpName}
+                    onChange={(e) => {
+                      setRsvpName(e.target.value);
+                      if (rsvpError) setRsvpError('');
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder="Name"
+                    className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+                  />
+                </div>
+
+                {/* Field 2: Phone */}
+                <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors">
+                  <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                  <input
+                    type="tel"
+                    value={rsvpPhone}
+                    onChange={(e) => setRsvpPhone(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder="Phone"
+                    className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+                  />
+                </div>
+
+                {/* Field 3: Attendance Dropdown (Joyfully Accepted / Regretfully Rejected) */}
+                <div className="relative w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors">
+                  <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 11l3 3L22 4" />
+                    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
                   </svg>
                   <select
-                    value={rsvpGuests}
-                    onChange={(e) => setRsvpGuests(e.target.value)}
+                    value={rsvpAttendance}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setRsvpAttendance(val);
+                      if (val !== 'accepted') {
+                        setRsvpGuests('');
+                      }
+                      if (rsvpError) setRsvpError('');
+                    }}
                     onClick={(e) => e.stopPropagation()}
-                    className={`w-full appearance-none bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] outline-none cursor-pointer pr-5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${
-                      rsvpGuests === '' ? 'text-[#efe3ca]/95' : 'text-[#fff8eb]'
-                    }`}
+                    className={`w-full appearance-none bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] outline-none cursor-pointer pr-5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${rsvpAttendance === '' ? 'text-[#efe3ca]/95' : 'text-[#fff8eb]'
+                      }`}
                   >
                     <option value="" disabled className="bg-[#21270d] text-[#efe3ca]">
-                      Number of Guest
+                      Attendance
                     </option>
-                    <option value="1" className="bg-[#21270d] text-[#fff8eb]">1 Guest</option>
-                    <option value="2" className="bg-[#21270d] text-[#fff8eb]">2 Guests</option>
-                    <option value="3" className="bg-[#21270d] text-[#fff8eb]">3 Guests</option>
-                    <option value="4" className="bg-[#21270d] text-[#fff8eb]">4 Guests</option>
-                    <option value="5+" className="bg-[#21270d] text-[#fff8eb]">5+ Guests</option>
+                    <option value="accepted" className="bg-[#21270d] text-[#fff8eb]">
+                      Joyfully Accepted
+                    </option>
+                    <option value="rejected" className="bg-[#21270d] text-[#fff8eb]">
+                      Regretfully Rejected
+                    </option>
                   </select>
                   <svg
                     className="w-3.5 h-3.5 text-[#e5c989] absolute right-0.5 pointer-events-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]"
@@ -1553,87 +1513,124 @@ export default function LandingPage({ preloadedBundle }) {
                     <polyline points="6 9 12 15 18 9" />
                   </svg>
                 </div>
-              )}
 
-              {/* Field 5: Send your Wishes... */}
-              <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors">
-                <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 20h9" />
-                  <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
-                </svg>
-                <input
-                  type="text"
-                  value={rsvpNote}
-                  onChange={(e) => setRsvpNote(e.target.value)}
+                {/* Field 4: Number of Guest Dropdown — behaves strictly according to Attendance selection */}
+                {rsvpAttendance === 'accepted' && (
+                  <div className="relative w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors animate-fadeIn">
+                    <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                      <circle cx="9" cy="7" r="4" />
+                      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                    </svg>
+                    <select
+                      value={rsvpGuests}
+                      onChange={(e) => setRsvpGuests(e.target.value)}
+                      onClick={(e) => e.stopPropagation()}
+                      className={`w-full appearance-none bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] outline-none cursor-pointer pr-5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] ${rsvpGuests === '' ? 'text-[#efe3ca]/95' : 'text-[#fff8eb]'
+                        }`}
+                    >
+                      <option value="" disabled className="bg-[#21270d] text-[#efe3ca]">
+                        Number of Guest
+                      </option>
+                      <option value="1" className="bg-[#21270d] text-[#fff8eb]">1 Guest</option>
+                      <option value="2" className="bg-[#21270d] text-[#fff8eb]">2 Guests</option>
+                      <option value="3" className="bg-[#21270d] text-[#fff8eb]">3 Guests</option>
+                      <option value="4" className="bg-[#21270d] text-[#fff8eb]">4 Guests</option>
+                      <option value="5+" className="bg-[#21270d] text-[#fff8eb]">5+ Guests</option>
+                    </select>
+                    <svg
+                      className="w-3.5 h-3.5 text-[#e5c989] absolute right-0.5 pointer-events-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.8"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                  </div>
+                )}
+
+                {/* Field 5: Send your Wishes... */}
+                <div className="w-full flex items-center gap-3 border-b border-[#d6b97a]/65 focus-within:border-[#f4db9c] pb-1.5 pt-0.5 transition-colors">
+                  <svg className="w-4 h-4 text-[#e5c989] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.45" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                  </svg>
+                  <input
+                    type="text"
+                    value={rsvpNote}
+                    onChange={(e) => setRsvpNote(e.target.value)}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder="Send your Wishes..."
+                    className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
+                  />
+                </div>
+
+                {rsvpError && (
+                  <p className="text-[11px] text-[#ffcf99] tracking-wide pt-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
+                    {rsvpError}
+                  </p>
+                )}
+
+                {/* Primary CTA Button: Send Response -> */}
+                <button
+                  type="submit"
+                  disabled={isSubmittingRsvp}
                   onClick={(e) => e.stopPropagation()}
-                  placeholder="Send your Wishes..."
-                  className="w-full bg-transparent font-script font-script-input text-[20px] sm:text-[22px] tracking-wide leading-[1.35] text-[#fff8eb] placeholder:text-[20px] sm:placeholder:text-[22px] placeholder:text-[#efe3ca]/95 outline-none select-text drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]"
-                />
-              </div>
-
-              {rsvpError && (
-                <p className="text-[11px] text-[#ffcf99] tracking-wide pt-0.5 drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
-                  {rsvpError}
-                </p>
-              )}
-
-              {/* Primary CTA Button: Send Response -> */}
-              <button
-                type="submit"
-                disabled={isSubmittingRsvp}
-                onClick={(e) => e.stopPropagation()}
-                className={`mt-2.5 sm:mt-3 inline-flex items-center justify-center gap-2 px-8 py-2 rounded-full text-[#1a130a] shadow-[0_0_20px_rgba(236,199,118,0.45),0_4px_12px_rgba(0,0,0,0.4)] transition-all group ${
-                  isSubmittingRsvp
+                  className={`mt-2.5 sm:mt-3 inline-flex items-center justify-center gap-2 px-8 py-2 rounded-full text-[#1a130a] shadow-[0_0_20px_rgba(236,199,118,0.45),0_4px_12px_rgba(0,0,0,0.4)] transition-all group ${isSubmittingRsvp
                     ? 'opacity-75 cursor-wait'
                     : 'hover:brightness-105 active:scale-95 cursor-pointer'
-                }`}
-                style={{
-                  background: 'linear-gradient(135deg, #fff5dc 0%, #efd291 50%, #d8ae5e 100%)',
-                }}
-              >
-                <span className="font-playfair text-[13px] sm:text-[14px] font-semibold tracking-wide text-[#1a130a]">
-                  {isSubmittingRsvp ? 'Sending...' : 'Send Response'}
-                </span>
-                {!isSubmittingRsvp && (
-                  <svg
-                    className="w-4 h-4 text-[#1a130a] shrink-0 group-hover:translate-x-0.5 transition-transform"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.9"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="5" y1="12" x2="19" y2="12" />
-                    <polyline points="12 5 19 12 12 19" />
-                  </svg>
-                )}
-              </button>
-            </form>
-          )}
+                    }`}
+                  style={{
+                    background: 'linear-gradient(135deg, #fff5dc 0%, #efd291 50%, #d8ae5e 100%)',
+                  }}
+                >
+                  <span className="font-playfair text-[13px] sm:text-[14px] font-semibold tracking-wide text-[#1a130a]">
+                    {isSubmittingRsvp ? 'Sending...' : 'Send Response'}
+                  </span>
+                  {!isSubmittingRsvp && (
+                    <svg
+                      className="w-4 h-4 text-[#1a130a] shrink-0 group-hover:translate-x-0.5 transition-transform"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.9"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <line x1="5" y1="12" x2="19" y2="12" />
+                      <polyline points="12 5 19 12 12 19" />
+                    </svg>
+                  )}
+                </button>
+              </form>
+            )}
 
-          {/* Bottom Ornamental Ribbon Bow Divider */}
-          <div className="flex items-center justify-center gap-2.5 w-full max-w-[200px] mt-2.5 sm:mt-3">
-            <div className="h-[1px] w-10 sm:w-12 bg-[#dec17c]/60" />
-            <svg
-              className="w-5 h-4 text-[#e2c685] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]"
-              viewBox="0 0 28 20"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.25"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              {/* Left loop */}
-              <path d="M14 9 C 10 4, 4 5, 5 9 C 6 12, 11 10, 14 9 Z" />
-              {/* Right loop */}
-              <path d="M14 9 C 18 4, 24 5, 23 9 C 22 12, 17 10, 14 9 Z" />
-              {/* Ribbon tails */}
-              <path d="M14 9 L 10 17" />
-              <path d="M14 9 L 18 17" />
-            </svg>
-            <div className="h-[1px] w-10 sm:w-12 bg-[#dec17c]/60" />
-          </div>
+            {/* Bottom Ornamental Ribbon Bow Divider */}
+            <div className="flex items-center justify-center gap-2.5 w-full max-w-[200px] mt-2.5 sm:mt-3">
+              <div className="h-[1px] w-10 sm:w-12 bg-[#dec17c]/60" />
+              <svg
+                className="w-5 h-4 text-[#e2c685] shrink-0 drop-shadow-[0_1px_2px_rgba(0,0,0,0.45)]"
+                viewBox="0 0 28 20"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.25"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                {/* Left loop */}
+                <path d="M14 9 C 10 4, 4 5, 5 9 C 6 12, 11 10, 14 9 Z" />
+                {/* Right loop */}
+                <path d="M14 9 C 18 4, 24 5, 23 9 C 22 12, 17 10, 14 9 Z" />
+                {/* Ribbon tails */}
+                <path d="M14 9 L 10 17" />
+                <path d="M14 9 L 18 17" />
+              </svg>
+              <div className="h-[1px] w-10 sm:w-12 bg-[#dec17c]/60" />
+            </div>
           </div>
         </div>
       </div>
