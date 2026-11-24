@@ -677,7 +677,7 @@ export default function LandingPage({ preloadedBundle }) {
               transform: `translateY(${l2Y}px)`,
             }}
           >
-            ST.THOMAS CATHEDRAL
+            ST. THOMAS ORTHODOX
           </h2>
 
           {/* Line 3: "CHURCH, MUVATTUPUZHA" */}
@@ -688,10 +688,19 @@ export default function LandingPage({ preloadedBundle }) {
               transform: `translateY(${l3Y}px)`,
             }}
           >
-            CHURCH, MUVATTUPUZHA
+            SYRIAN CATHEDRAL,
           </h2>
 
           {/* Line 4: Directions pill button */}
+          <h2
+            className="font-cormorant italic font-bold text-[18px] min-[360px]:text-xl sm:text-2xl text-[#36441a] tracking-wide leading-none mt-1 select-none drop-shadow-[0_1px_2px_rgba(255,255,255,0.35)] transition-all duration-100 ease-out"
+            style={{
+              opacity: l3Opacity,
+              transform: `translateY(${l3Y}px)`,
+            }}
+          >
+            MUVATTUPUZHA
+          </h2>
           <div
             className="mt-3.5 transition-all duration-100 ease-out"
             style={{
@@ -1230,9 +1239,9 @@ export default function LandingPage({ preloadedBundle }) {
                     <path d="M10 21v-6h4v6" />
                   </svg>
                   <span className="font-cormorant font-bold text-[10px] sm:text-[11px] leading-[1.08] text-[#1a1815] text-left">
-                    St. Thomas
+                    St. Thomas Orthodox
                     <br />
-                    Cathedral
+                    Syrian Cathedral
                   </span>
                 </div>
 
