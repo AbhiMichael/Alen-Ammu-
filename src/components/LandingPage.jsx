@@ -820,9 +820,9 @@ export default function LandingPage({ preloadedBundle }) {
         />
       </div>
 
-      {/* Aesthetic bottom scroll hint (visible only on early frames) */}
+      {/* Aesthetic top scroll hint at 25% from top (visible only on early frames) */}
       <div
-        className={`absolute bottom-[max(2rem,calc(env(safe-area-inset-bottom)+1.25rem))] inset-x-0 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-500 z-20 ${frameIndex > 35 ? 'opacity-0' : 'opacity-100'
+        className={`absolute top-[25%] inset-x-0 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-500 z-20 ${frameIndex > 35 ? 'opacity-0' : 'opacity-100'
           }`}
       >
         <p className="font-cormorant italic text-sm sm:text-base tracking-[0.25em] text-stone-200/90 drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
