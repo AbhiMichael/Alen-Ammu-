@@ -834,10 +834,21 @@ export default function LandingPage({ preloadedBundle }) {
         className={`absolute top-[24%] inset-x-0 flex flex-col items-center justify-center pointer-events-none transition-opacity duration-500 z-20 ${frameIndex > 35 ? 'opacity-0' : 'opacity-100'
           }`}
       >
-        <p className="font-cormorant italic font-medium text-sm sm:text-base tracking-[0.25em] text-[#36441a] drop-shadow-[0_1px_3px_rgba(255,255,255,0.6)]">
+        <p className="font-cormorant italic font-bold text-[16px] sm:text-[18px] tracking-[0.2em] text-[#36441a] drop-shadow-[0_1px_3px_rgba(255,255,255,0.85)]">
           Scroll down to begin our story
         </p>
-        <div className="w-[1px] h-6 bg-gradient-to-b from-[#36441a]/70 to-transparent mt-1.5 animate-pulse" />
+        <svg
+          className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-[#36441a] mt-1.5 animate-bounce drop-shadow-[0_1px_2px_rgba(255,255,255,0.7)]"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M12 19V5" />
+          <polyline points="5 12 12 5 19 12" />
+        </svg>
       </div>
 
       {/* Complete Wedding Invitation Card Overlay during Venue section (reveals line-by-line starting earlier at venue frame 75, disappears on frame 200) */}
